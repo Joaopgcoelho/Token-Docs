@@ -1,0 +1,24 @@
+{
+  "Base": {
+    "Sizing": {
+      "Border": {
+        "Width": {
+          "0": { "$type": "dimension", "$value": "0px" },
+          "100": { "$type": "dimension", "$value": "1px" },
+          "200": { "$type": "dimension", "$value": "2px" },
+          "300": { "$type": "dimension", "$value": "4px" },
+          "400": { "$type": "dimension", "$value": "6px" }
+        },
+        "Radius": {
+          "None": { "$type": "dimension", "$value": "0px" },
+          "XxSmall": { "$type": "dimension", "$value": "2px" },
+          "XSmall": { "$type": "dimension", "$value": "4px" },
+          "Small": { "$type": "dimension", "$value": "8px" },
+          "Medium": { "$type": "dimension", "$value": "12px" },
+          "Large": { "$type": "dimension", "$value": "24px" },
+          "Pill": { "$type": "dimension", "$value": "200px" }
+        }
+      }
+    }
+  }
+}

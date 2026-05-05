@@ -1,0 +1,92 @@
+{
+  "Base": {
+    "Typography": {
+      "FontFamily": {
+        "Display": { "$type": "fontFamily", "$value": "Sora" },
+        "Heading": { "$type": "fontFamily", "$value": "Sora" },
+        "Paragraph": { "$type": "fontFamily", "$value": "Inter" },
+        "Link": { "$type": "fontFamily", "$value": "Inter" },
+        "Label": { "$type": "fontFamily", "$value": "Inter" },
+        "Caption": { "$type": "fontFamily", "$value": "Inter" },
+        "Overline": { "$type": "fontFamily", "$value": "Inter" },
+        "Code": { "$type": "fontFamily", "$value": "Source Code Pro" }
+      },
+      "FontWeight": {
+        "Display": {
+          "Light": { "$type": "fontWeight", "$value": "300" },
+          "Regular": { "$type": "fontWeight", "$value": "400" },
+          "Semibold": { "$type": "fontWeight", "$value": "600" },
+          "Bold": { "$type": "fontWeight", "$value": "700" }
+        },
+        "Heading": {
+          "Light": { "$type": "fontWeight", "$value": "300" },
+          "Regular": { "$type": "fontWeight", "$value": "400" },
+          "Semibold": { "$type": "fontWeight", "$value": "600" },
+          "Bold": { "$type": "fontWeight", "$value": "700" }
+        },
+        "Paragraph": {
+          "Light": { "$type": "fontWeight", "$value": "300" },
+          "Regular": { "$type": "fontWeight", "$value": "400" },
+          "Semibold": { "$type": "fontWeight", "$value": "600" },
+          "Bold": { "$type": "fontWeight", "$value": "700" }
+        },
+        "Link": {
+          "Medium": { "$type": "fontWeight", "$value": "500" },
+          "Semibold": { "$type": "fontWeight", "$value": "600" }
+        },
+        "Label": {
+          "Medium": { "$type": "fontWeight", "$value": "500" }
+        },
+        "Caption": {
+          "Regular": { "$type": "fontWeight", "$value": "400" },
+          "Semibold": { "$type": "fontWeight", "$value": "600" },
+          "Bold": { "$type": "fontWeight", "$value": "700" }
+        },
+        "Overline": {
+          "Regular": { "$type": "fontWeight", "$value": "400" }
+        },
+        "Code": {
+          "Regular": { "$type": "fontWeight", "$value": "400" }
+        }
+      },
+      "FontSize": {
+        "100": { "$type": "dimension", "$value": "12px" },
+        "200": { "$type": "dimension", "$value": "14px" },
+        "300": { "$type": "dimension", "$value": "16px" },
+        "400": { "$type": "dimension", "$value": "18px" },
+        "500": { "$type": "dimension", "$value": "20px" },
+        "600": { "$type": "dimension", "$value": "22px" },
+        "700": { "$type": "dimension", "$value": "24px" },
+        "800": { "$type": "dimension", "$value": "26px" },
+        "900": { "$type": "dimension", "$value": "28px" },
+        "1000": { "$type": "dimension", "$value": "30px" },
+        "1100": { "$type": "dimension", "$value": "32px" },
+        "1200": { "$type": "dimension", "$value": "34px" },
+        "1300": { "$type": "dimension", "$value": "40px" },
+        "1400": { "$type": "dimension", "$value": "42px" },
+        "1500": { "$type": "dimension", "$value": "48px" },
+        "1600": { "$type": "dimension", "$value": "50px" },
+        "1700": { "$type": "dimension", "$value": "64px" }
+      },
+      "LineHeight": {
+        "100": { "$type": "dimension", "$value": "18px" },
+        "200": { "$type": "dimension", "$value": "20px" },
+        "300": { "$type": "dimension", "$value": "24px" },
+        "400": { "$type": "dimension", "$value": "28px" },
+        "500": { "$type": "dimension", "$value": "26px" },
+        "600": { "$type": "dimension", "$value": "30px" },
+        "700": { "$type": "dimension", "$value": "32px" },
+        "800": { "$type": "dimension", "$value": "34px" },
+        "900": { "$type": "dimension", "$value": "38px" },
+        "1000": { "$type": "dimension", "$value": "40px" },
+        "1100": { "$type": "dimension", "$value": "42px" },
+        "1200": { "$type": "dimension", "$value": "44px" },
+        "1300": { "$type": "dimension", "$value": "52px" },
+        "1400": { "$type": "dimension", "$value": "58px" },
+        "1500": { "$type": "dimension", "$value": "64px" },
+        "1600": { "$type": "dimension", "$value": "64px" },
+        "1700": { "$type": "dimension", "$value": "80px" }
+      }
+    }
+  }
+}

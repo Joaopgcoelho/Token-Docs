@@ -1,0 +1,3125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Token Docs</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:13px;background:#f5f5f5;color:#1a1a1a;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ── Topbar ───────────────────────────────────────────────────────────── */
+.topbar{display:flex;align-items:center;gap:8px;padding:0 12px;height:44px;background:#fff;border-bottom:1px solid #e5e5e5;flex-shrink:0;z-index:100}
+.topbar-logo{width:24px;height:24px;background:linear-gradient(135deg,#1066fa 0%,#6c1bed 100%);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0}
+.topbar-title{font-size:13px;font-weight:600;color:#1a1a1a;flex-shrink:0}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#d1d5db;flex-shrink:0;transition:background .3s}
+.status-dot.ok{background:#059669}.status-dot.busy{background:#d97706}.status-dot.err{background:#dc2626}
+.status-text{font-size:11px;color:#6b7280;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-sep{width:1px;height:20px;background:#e5e5e5;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;border:1px solid #e5e5e5;background:#fff;font-size:12px;font-weight:500;color:#374151;cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap;flex-shrink:0}
+.btn:hover{background:#f3f4f6;border-color:#d1d5db}.btn:active{background:#e5e7eb}
+.btn-icon{padding:5px 8px;font-size:14px}
+.btn-primary{background:#6c1bed;border-color:#6c1bed;color:#fff}.btn-primary:hover{background:#5b17c7;border-color:#5b17c7}
+.btn-success{background:#059669;border-color:#059669;color:#fff}.btn-success:hover{background:#047857;border-color:#047857}
+.btn-blue{background:#1066fa;border-color:#1066fa;color:#fff}.btn-blue:hover{background:#0d55d4;border-color:#0d55d4}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── Layout ───────────────────────────────────────────────────────────── */
+.workspace{display:flex;flex:1;overflow:hidden}
+
+/* ── Left Nav ─────────────────────────────────────────────────────────── */
+.leftnav{width:200px;flex-shrink:0;background:#fff;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;overflow:hidden}
+.leftnav-header{padding:10px 12px 6px;font-size:10px;font-weight:600;color:#9ca3af;letter-spacing:.06em;text-transform:uppercase}
+.leftnav-list{flex:1;overflow-y:auto;padding:4px 0}
+.leftnav-item{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;transition:background .12s;user-select:none}
+.leftnav-item:hover{background:#f9fafb}
+.leftnav-item.active{background:#eff6ff}
+.leftnav-item.active .leftnav-name{color:#1066fa;font-weight:600}
+.nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.leftnav-name{font-size:12px;color:#374151;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leftnav-count{font-size:10px;color:#9ca3af;background:#f3f4f6;border-radius:10px;padding:1px 5px}
+.leftnav-checkbox{width:14px;height:14px;cursor:pointer;flex-shrink:0;margin:0;accent-color:#1066fa}
+.leftnav-footer{padding:8px 12px;border-top:1px solid #e5e5e5;display:flex;gap:6px}
+.leftnav-footer .btn{flex:1;justify-content:center;font-size:11px;padding:4px 6px}
+
+/* ── Main ─────────────────────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── View Tabs ────────────────────────────────────────────────────────── */
+.view-tabs{display:flex;align-items:center;padding:0 16px;background:#fff;border-bottom:1px solid #e5e5e5;flex-shrink:0}
+.view-tab{padding:10px 14px;font-size:12px;font-weight:500;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.view-tab:hover{color:#374151}
+.view-tab.active{color:#1066fa;border-bottom-color:#1066fa;font-weight:600}
+.tab-badge{font-size:9px;font-weight:700;background:#dc2626;color:#fff;padding:1px 5px;border-radius:8px;margin-left:4px}
+
+/* ── Tokens Wrap ──────────────────────────────────────────────────────── */
+.tokens-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.tokens-wrap.hidden,.validate-wrap.hidden,.divergence-wrap-hidden{display:none}
+
+/* ── Mode Bar ─────────────────────────────────────────────────────────── */
+.mode-bar{display:flex;align-items:center;gap:6px;padding:8px 16px;background:#fafafa;border-bottom:1px solid #e5e5e5;flex-shrink:0}
+.mode-label{font-size:11px;color:#9ca3af;font-weight:500;margin-right:4px}
+.mode-chip{padding:3px 10px;border-radius:20px;border:1px solid #e5e5e5;background:#fff;font-size:11px;font-weight:500;color:#6b7280;cursor:pointer;transition:all .15s}
+.mode-chip:hover{border-color:#1066fa;color:#1066fa}
+.mode-chip.active{background:#1066fa;border-color:#1066fa;color:#fff}
+
+/* ── Main Content ─────────────────────────────────────────────────────── */
+#main-content{flex:1;overflow-y:auto;padding:20px}
+
+/* ── Group Header ─────────────────────────────────────────────────────── */
+.group-header{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:16px 20px;margin-bottom:16px;display:flex;gap:16px;align-items:flex-start}
+.group-header-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.group-header-body{flex:1}
+.group-header-title{font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.group-header-desc{font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:8px}
+.group-header-examples{font-size:11px;color:#9ca3af}
+.group-header-examples strong{color:#6b7280}
+.when-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.when-box{background:#f9fafb;border-radius:8px;padding:10px 12px}
+.when-box-title{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
+.when-box.do .when-box-title{color:#059669}
+.when-box.dont .when-box-title{color:#dc2626}
+.when-box ul{padding-left:14px}
+.when-box li{font-size:11px;color:#374151;line-height:1.6}
+
+/* ── Guidelines ───────────────────────────────────────────────────────── */
+.guidelines-section{margin-bottom:16px}
+.guidelines-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.guideline-col{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:14px 16px}
+.guideline-col-title{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.guideline-col.do .guideline-col-title{color:#059669}
+.guideline-col.dont .guideline-col-title{color:#dc2626}
+.guideline-col ul{padding-left:16px}
+.guideline-col li{font-size:12px;color:#374151;line-height:1.7}
+
+/* ── Component Preview ────────────────────────────────────────────────── */
+.preview-section{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:16px;margin-bottom:16px}
+.section-title{font-size:11px;font-weight:700;color:#9ca3af;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+.preview-area{background:#f9fafb;border-radius:8px;padding:20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.prev-btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;border:none;cursor:default}
+.prev-btn-primary{background:#1066fa;color:#fff}
+.prev-btn-secondary{background:#fff;color:#1066fa;border:1.5px solid #1066fa}
+.prev-btn-ghost{background:transparent;color:#1066fa;border:1.5px solid #e5e5e5}
+.prev-tabs{display:flex;background:#f3f4f6;border-radius:8px;padding:3px}
+.prev-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;color:#6b7280;cursor:default}
+.prev-tab.active{background:#fff;color:#6c1bed;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.prev-accordion{background:#fff;border:1px solid #e5e5e5;border-radius:8px;overflow:hidden;min-width:220px}
+.prev-acc-row{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:500;color:#374151;border-bottom:1px solid #f3f4f6}
+.prev-acc-row:last-child{border-bottom:none}
+.prev-acc-row.open{color:#6c1bed}
+.prev-acc-body{padding:8px 14px 12px;font-size:11px;color:#6b7280;line-height:1.5;border-bottom:1px solid #f3f4f6}
+.prev-card{background:#fff;border:1px solid #e5e5e5;border-radius:10px;overflow:hidden;width:200px}
+.prev-card-img{height:80px;background:linear-gradient(135deg,#e0e7ff 0%,#f0fdf4 100%);display:flex;align-items:center;justify-content:center;font-size:24px}
+.prev-card-body{padding:10px 12px}
+.prev-card-title{font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.prev-card-text{font-size:11px;color:#6b7280}
+.prev-input-wrap{display:flex;flex-direction:column;gap:8px;min-width:200px}
+.prev-input-label{font-size:11px;font-weight:500;color:#374151}
+.prev-input{padding:7px 10px;border-radius:6px;border:1.5px solid #d1d5db;background:#fff;font-size:12px;color:#1a1a1a;outline:none}
+.prev-input.error{border-color:#dc2626;background:#fff5f5}
+.prev-input-error-msg{font-size:10px;color:#dc2626}
+.prev-checkbox-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#374151}
+.prev-checkbox{width:15px;height:15px;border-radius:4px;border:1.5px solid #d97706;background:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;color:#d97706}
+.prev-palette{display:flex;gap:6px;flex-wrap:wrap}
+.prev-swatch{width:36px;height:36px;border-radius:8px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px}
+.prev-swatch-label{font-size:8px;color:rgba(0,0,0,.5);font-weight:600}
+
+/* ── Token Grid ───────────────────────────────────────────────────────── */
+.token-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+.token-card{background:#fff;border:1px solid #e5e5e5;border-radius:10px;overflow:hidden;transition:box-shadow .15s}
+.token-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.token-color-block{height:64px;position:relative}
+.token-card-body{padding:10px 12px}
+.token-name{font-size:11px;font-weight:600;color:#1a1a1a;margin-bottom:3px;word-break:break-all}
+.token-desc{font-size:10px;color:#6b7280;line-height:1.4;margin-bottom:6px}
+.token-value{font-size:10px;font-family:"SF Mono","Fira Code",monospace;color:#374151;background:#f3f4f6;padding:2px 6px;border-radius:4px;display:inline-block;margin-bottom:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.token-badges{display:flex;flex-wrap:wrap;gap:4px}
+.badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:10px;display:inline-flex;align-items:center;gap:3px}
+.badge-aa{background:#d1fae5;color:#065f46}
+.badge-aaa{background:#a7f3d0;color:#064e3b}
+.badge-fail{background:#fee2e2;color:#991b1b}
+.badge-alias{background:#ede9fe;color:#5b21b6}
+.badge-mode{background:#e0f2fe;color:#0369a1}
+
+/* ── Token Table ──────────────────────────────────────────────────────── */
+.token-table-wrap{background:#fff;border:1px solid #e5e5e5;border-radius:10px;overflow:hidden;margin-bottom:16px}
+.token-table{width:100%;border-collapse:collapse}
+.token-table th{padding:8px 12px;font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;text-align:left;background:#f9fafb;border-bottom:1px solid #e5e5e5}
+.token-table td{padding:8px 12px;font-size:11px;color:#374151;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+.token-table tr:last-child td{border-bottom:none}
+.token-table tr:hover td{background:#f9fafb}
+.token-table .td-name{font-family:"SF Mono","Fira Code",monospace;font-size:11px;color:#1a1a1a;font-weight:500}
+.token-table .td-val{font-family:"SF Mono","Fira Code",monospace;font-size:10px;color:#6b7280}
+
+/* ── Prefix Header ────────────────────────────────────────────────────── */
+.prefix-header{font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em;text-transform:uppercase;padding:12px 0 6px;display:flex;align-items:center;gap:8px}
+.prefix-header::after{content:"";flex:1;height:1px;background:#e5e5e5}
+
+/* ── Validate View ────────────────────────────────────────────────────── */
+.validate-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.validate-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;border-bottom:1px solid #e5e5e5;flex-shrink:0}
+.validate-bar-text{flex:1;font-size:12px;color:#6b7280}
+.validate-results{flex:1;overflow-y:auto;padding:16px}
+.validate-summary{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.summary-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.chip-ok{background:#d1fae5;color:#065f46}
+.chip-diff{background:#fef3c7;color:#92400e}
+.chip-miss{background:#fee2e2;color:#991b1b}
+.chip-new{background:#e0f2fe;color:#0369a1}
+.diff-list{display:flex;flex-direction:column;gap:8px}
+.diff-item{background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px}
+.diff-item.diff{border-left:3px solid #f59e0b}
+.diff-item.miss{border-left:3px solid #dc2626}
+.diff-item.ok{border-left:3px solid #059669}
+.diff-item.new{border-left:3px solid #1066fa}
+.diff-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.diff-body{flex:1}
+.diff-name{font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:3px}
+.diff-detail{font-size:11px;color:#6b7280}
+.diff-detail span{font-family:"SF Mono","Fira Code",monospace}
+.validate-empty{text-align:center;padding:48px 20px;color:#9ca3af;font-size:13px}
+.validate-empty .ve-icon{font-size:32px;margin-bottom:8px}
+
+/* ── Suggestion Panel ─────────────────────────────────────────────────── */
+.suggestion-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.suggestion-node-name{font-size:12px;font-weight:700;color:#111;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.suggestion-node-type{font-size:9px;color:#9ca3af;background:#f3f4f6;padding:1px 6px;border-radius:4px}
+.suggestion-composition{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.comp-tag{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:#eff6ff;color:#1d4ed8}
+.comp-tag.group{background:#ede9fe;color:#5b21b6}
+.comp-tag.state{background:#fef3c7;color:#92400e}
+.comp-tag.feedback-success{background:#dcfce7;color:#166534}
+.comp-tag.feedback-warning{background:#fef3c7;color:#92400e}
+.comp-tag.feedback-critical{background:#fee2e2;color:#991b1b}
+.suggestion-props{display:flex;flex-direction:column;gap:8px}
+.suggestion-prop{background:#f9fafb;border-radius:8px;padding:10px 12px;border:1px solid #f3f4f6}
+.suggestion-prop-title{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.suggestion-current{display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:5px 8px;background:#fff;border-radius:5px;border:1px solid #e5e5e5}
+.suggestion-current-label{font-size:9px;color:#9ca3af;flex-shrink:0}
+.suggestion-current-token{font-size:10px;font-family:monospace;color:#374151;flex:1;overflow:hidden;text-overflow:ellipsis}
+.suggestion-current-swatch{width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.1);flex-shrink:0}
+.suggestion-list{display:flex;flex-direction:column;gap:4px}
+.suggestion-item{display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fff;border-radius:6px;border:1px solid #e5e5e5;cursor:pointer;transition:border-color .15s}
+.suggestion-item:hover{border-color:#1066fa;background:#eff6ff}
+.suggestion-item.top{border-color:#059669;background:#f0fdf4}
+.suggestion-rank{font-size:9px;font-weight:700;color:#9ca3af;width:14px;flex-shrink:0;text-align:center}
+.suggestion-rank.top{color:#059669}
+.suggestion-token-name{font-size:10px;font-family:monospace;color:#374151;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.suggestion-reason{font-size:9px;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.suggestion-apply{padding:3px 8px;font-size:9px;font-weight:700;background:#1066fa;color:#fff;border:none;border-radius:4px;cursor:pointer;flex-shrink:0}
+.suggestion-apply:hover{background:#0d55d4}
+.suggestion-no-token{font-size:10px;color:#f59e0b;display:flex;align-items:center;gap:4px}
+.suggestion-has-token{font-size:10px;color:#059669;display:flex;align-items:center;gap:4px}
+.audit-summary{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.audit-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:5px}
+.chip-error{background:#fee2e2;color:#991b1b}
+.chip-warning{background:#fef3c7;color:#92400e}
+.chip-suggestion{background:#dbeafe;color:#1e40af}
+.chip-ok{background:#d1fae5;color:#065f46}
+.audit-issue{background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px}
+.audit-issue.error{border-left:3px solid #dc2626}
+.audit-issue.warning{border-left:3px solid #f59e0b}
+.audit-issue.suggestion{border-left:3px solid #3b82f6}
+.audit-issue-header{display:flex;align-items:center;gap:8px}
+.audit-severity{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;flex-shrink:0}
+.sev-error{background:#fee2e2;color:#991b1b}
+.sev-warning{background:#fef3c7;color:#92400e}
+.sev-suggestion{background:#dbeafe;color:#1e40af}
+.audit-node{font-size:11px;font-weight:600;color:#374151;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.audit-property{font-size:10px;color:#9ca3af;background:#f3f4f6;padding:1px 6px;border-radius:4px}
+.audit-tokens{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.audit-token-box{padding:4px 8px;border-radius:5px;font-size:10px;font-family:monospace;display:flex;align-items:center;gap:5px}
+.audit-token-current{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.audit-token-recommended{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.audit-arrow{color:#9ca3af;font-size:12px}
+.audit-swatch{width:12px;height:12px;border-radius:2px;border:1px solid rgba(0,0,0,.1);flex-shrink:0}
+.audit-reason{font-size:11px;color:#6b7280;line-height:1.4}
+.audit-educational{font-size:10px;color:#374151;background:#f8fafc;border-radius:6px;padding:8px 10px;border-left:3px solid #3b82f6;line-height:1.5}
+.audit-actions{display:flex;gap:6px}
+.btn-fix{padding:4px 10px;height:24px;font-size:10px;background:#059669;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:600}
+.btn-fix:hover{background:#047857}
+.btn-select{padding:4px 10px;height:24px;font-size:10px;background:#f3f4f6;color:#374151;border:1px solid #e5e5e5;border-radius:5px;cursor:pointer;font-weight:600}
+.audit-fix-all{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f0fdf4;border-radius:8px;margin-bottom:12px;border:1px solid #bbf7d0}
+.audit-progress{text-align:center;padding:40px;color:#9ca3af;font-size:12px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:#9ca3af}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#9ca3af;gap:8px}
+.empty-state .es-icon{font-size:36px}
+.empty-state .es-text{font-size:13px}
+.spinner{width:20px;height:20px;border:2px solid #e5e5e5;border-top-color:#1066fa;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Divergence Action Bar ────────────────────────────────────────── */
+.div-action-bar{display:flex;align-items:flex-start;gap:0;padding:10px 16px;background:#fafafa;border-bottom:1px solid #e5e5e5;flex-shrink:0;flex-wrap:wrap}
+.div-btn-group{display:flex;flex-direction:column;gap:6px;padding:8px 12px;background:#fff;border:1px solid #e5e5e5;border-radius:8px;min-width:0}
+.div-btn-group-label{font-size:9px;font-weight:700;color:#9ca3af;letter-spacing:0.06em;text-transform:uppercase}
+.div-btn-group-buttons{display:flex;gap:6px;flex-wrap:wrap}
+.div-btn-sep{width:1px;background:#e5e5e5;align-self:stretch;margin:0 8px;min-height:40px}
+.btn-watch-active{background:#059669;border-color:#059669;color:#fff;animation:watch-pulse 2s ease-in-out infinite}
+.btn-watch-active:hover{background:#047857;border-color:#047857}
+@keyframes watch-pulse{0%,100%{box-shadow:0 0 0 0 rgba(5,150,105,0.4)}50%{box-shadow:0 0 0 4px rgba(5,150,105,0)}}
+
+/* ── Tab Help / Documentation Area ────────────────────────────────── */
+.tab-help{background:#f8fafc;border-bottom:1px solid #e5e5e5;flex-shrink:0}
+.tab-help-toggle{display:flex;align-items:center;gap:6px;padding:8px 16px;cursor:pointer;user-select:none;transition:background .15s}
+.tab-help-toggle:hover{background:#f1f5f9}
+.tab-help-icon{font-size:14px;flex-shrink:0}
+.tab-help-label{font-size:11px;font-weight:600;color:#6b7280;flex:1}
+.tab-help-chevron{font-size:10px;color:#9ca3af;transition:transform 0.2s}
+.tab-help-chevron.open{transform:rotate(180deg)}
+.tab-help-content{display:none;padding:12px 16px 16px;font-size:12px;color:#374151;line-height:1.6;border-top:1px solid #e5e5e5}
+.tab-help-content h4{font-size:11px;font-weight:700;color:#1a1a1a;margin:10px 0 4px;text-transform:uppercase;letter-spacing:0.04em}
+.tab-help-content h4:first-child{margin-top:0}
+.tab-help-content p{margin:0 0 6px}
+.tab-help-content ul{padding-left:16px;margin:0 0 8px}
+.tab-help-content li{margin-bottom:3px}
+.tab-help-content code{background:#e5e7eb;padding:1px 5px;border-radius:3px;font-size:11px}
+</style>
+</head>
+<body>
+
+<!-- ── Topbar ──────────────────────────────────────────────────────────── -->
+<div class="topbar">
+  <div class="topbar-logo">T</div>
+  <span class="topbar-title">Token Docs</span>
+  <div class="status-dot" id="status-dot"></div>
+  <span class="status-text" id="status-text">Aguardando dados…</span>
+  <!-- Grupo Exportação -->
+  <div class="topbar-sep"></div>
+  <button class="btn" id="btn-copy" title="Exportar todos os tokens da collection ativa como arquivo JSON">Exportar JSON</button>
+  <button class="btn" id="btn-export-md" title="Exportar documentação completa dos tokens em formato Markdown">Exportar MD</button>
+  <!-- Grupo Canvas -->
+  <div class="topbar-sep"></div>
+  <button class="btn btn-primary" id="btn-docs" title="Gerar boards de documentação no canvas para as collections selecionadas">Gerar Boards</button>
+  <button class="btn btn-success" id="btn-update" title="Atualizar incrementalmente os boards existentes das collections selecionadas">Atualizar Boards</button>
+  <!-- Grupo Controle -->
+  <div class="topbar-sep"></div>
+  <button class="btn btn-blue btn-icon" id="btn-refresh" title="Recarregar dados de tokens e variáveis do Figma">&#8635;</button>
+</div>
+
+<!-- ── Workspace ──────────────────────────────────────────────────────── -->
+<div class="workspace">
+
+  <!-- Left Nav -->
+  <div class="leftnav">
+    <div class="leftnav-header">Collections Disponíveis</div>
+    <div class="leftnav-list" id="leftnav-list">
+      <div class="empty-state" style="height:120px"><div class="spinner"></div></div>
+    </div>
+    <div class="leftnav-footer">
+      <button class="btn" id="btn-all" title="Marcar todas as collections para geração/atualização">Selecionar Todas</button>
+      <button class="btn" id="btn-none" title="Desmarcar todas as collections">Limpar Seleção</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="view-tabs">
+      <div class="view-tab active" id="tab-tokens" onclick="switchView('tokens')">Tokens — Visualização</div>
+      <div class="view-tab" id="tab-audit" onclick="switchView('audit')">
+        Auditoria — Uso de Tokens
+        <span class="tab-badge" id="audit-badge" style="display:none">0</span>
+      </div>
+      <div class="view-tab" id="tab-validate" onclick="switchView('validate')">Storybook — Validação</div>
+      <div class="view-tab" id="tab-divergence" onclick="switchView('divergence')">
+        Divergências — Figma vs npm
+        <span class="tab-badge" id="div-badge" style="display:none">0</span>
+      </div>
+    </div>
+
+    <!-- Tokens View -->
+    <div class="tokens-wrap" id="tokens-wrap">
+      <!-- Documentação colapsável da aba Tokens -->
+      <div class="tab-help" id="help-tokens">
+        <div class="tab-help-toggle" onclick="toggleTabHelp('tokens')">
+          <span class="tab-help-icon">&#10067;</span>
+          <span class="tab-help-label">Como usar esta aba</span>
+          <span class="tab-help-chevron" id="help-chevron-tokens">&#9660;</span>
+        </div>
+        <div class="tab-help-content" id="help-content-tokens" style="display:none">
+          <h4>Navegação entre Collections</h4>
+          <p>Use o painel lateral esquerdo para selecionar uma collection. Cada collection agrupa
+          tokens relacionados (cores, tipografia, espaçamento). Clique no nome da collection para
+          visualizar seus tokens.</p>
+
+          <h4>Alternando entre Modos</h4>
+          <p>Use os chips de modo (ex: <code>Light</code>, <code>Dark</code>) na barra acima dos
+          tokens para alternar entre as variações de cada collection. Os valores dos tokens mudam
+          conforme o modo selecionado.</p>
+
+          <h4>Busca de Tokens</h4>
+          <p>Use o campo de busca para filtrar tokens pelo nome. A busca é instantânea e filtra
+          enquanto você digita.</p>
+
+          <h4>Badges de Acessibilidade</h4>
+          <ul>
+            <li><strong>AA</strong> — Contraste atende ao nível AA do WCAG (mínimo 4.5:1 para texto normal)</li>
+            <li><strong>AAA</strong> — Contraste atende ao nível AAA do WCAG (mínimo 7:1 para texto normal)</li>
+            <li><strong>Fail</strong> — Contraste insuficiente para acessibilidade</li>
+          </ul>
+        </div>
+      </div>
+      <!-- Painel de sugestão por seleção (aparece quando há nó selecionado) -->
+      <div id="suggestion-panel" style="display:none;background:#fff;border-bottom:1px solid #e5e5e5;padding:12px 16px;flex-shrink:0"></div>
+      <div class="mode-bar" id="mode-bar"></div>
+      <div id="main-content">
+        <div class="empty-state">
+          <div class="es-icon">&#127912;</div>
+          <div class="es-text">Selecione uma collection na barra lateral</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audit View -->
+    <div class="validate-wrap hidden" id="audit-wrap">
+      <!-- Documentação colapsável da aba Auditoria -->
+      <div class="tab-help" id="help-audit">
+        <div class="tab-help-toggle" onclick="toggleTabHelp('audit')">
+          <span class="tab-help-icon">&#10067;</span>
+          <span class="tab-help-label">Como usar esta aba</span>
+          <span class="tab-help-chevron" id="help-chevron-audit">&#9660;</span>
+        </div>
+        <div class="tab-help-content" id="help-content-audit" style="display:none">
+          <h4>O que a Auditoria Verifica</h4>
+          <p>A auditoria escaneia os nós (componentes, frames, textos) da página e verifica se os
+          tokens de design estão sendo usados corretamente. Detecta valores brutos sem token,
+          tokens de camada incorreta e tipos incompatíveis.</p>
+
+          <h4>Níveis de Severidade</h4>
+          <ul>
+            <li><strong>Error</strong> — Problema crítico: valor bruto sem token ou token Base/Foundations
+            usado diretamente em UI. Deve ser corrigido.</li>
+            <li><strong>Warning</strong> — Atenção: token Brand usado onde Usage seria mais apropriado,
+            ou tipo de token incompatível com a propriedade.</li>
+            <li><strong>Suggestion</strong> — Sugestão de melhoria: token de Component usado fora do
+            contexto System Ops, ou oportunidade de usar um token mais específico.</li>
+          </ul>
+
+          <h4>Aplicando Correções</h4>
+          <p>Clique em <strong>"Corrigir"</strong> ao lado de cada issue para aplicar a correção
+          sugerida automaticamente. Use <strong>"Corrigir Todos"</strong> para aplicar todas as
+          correções de uma vez. Clique em <strong>"Selecionar"</strong> para navegar até o nó
+          afetado no canvas.</p>
+        </div>
+      </div>
+      <div class="validate-bar" style="flex-wrap:wrap;gap:8px">
+        <span class="validate-bar-text">Escaneia nós da página e detecta uso incorreto de tokens.</span>
+        <div style="display:flex;gap:6px;margin-left:auto">
+          <button class="btn btn-blue" id="btn-audit-page" title="Escanear todos os nós da página atual e detectar uso incorreto de tokens">&#128269; Auditar Página Inteira</button>
+          <button class="btn" id="btn-audit-selection" title="Escanear apenas os nós selecionados no canvas">Auditar Seleção Atual</button>
+        </div>
+      </div>
+      <div id="audit-results" style="flex:1;overflow-y:auto;padding:16px">
+        <div class="validate-empty">
+          <div class="ve-icon">&#128269;</div>
+          Clique em "Auditar Página Inteira" para iniciar a auditoria de tokens
+        </div>
+      </div>
+    </div>
+
+    <!-- Validate View -->
+    <div class="validate-wrap hidden" id="validate-wrap">
+      <!-- Documentação colapsável da aba Storybook Validação -->
+      <div class="tab-help" id="help-validate">
+        <div class="tab-help-toggle" onclick="toggleTabHelp('validate')">
+          <span class="tab-help-icon">&#10067;</span>
+          <span class="tab-help-label">Como usar esta aba</span>
+          <span class="tab-help-chevron" id="help-chevron-validate">&#9660;</span>
+        </div>
+        <div class="tab-help-content" id="help-content-validate" style="display:none">
+          <h4>Como Carregar Dados</h4>
+          <p>Existem três formas de carregar tokens do Storybook/npm para comparação:</p>
+          <ul>
+            <li><strong>Buscar Tokens do Storybook</strong> — Busca automática dos tokens publicados
+            no Storybook via URL configurada.</li>
+            <li><strong>Carregar Arquivo JSON</strong> — Selecione um arquivo <code>.json</code> local
+            com os tokens exportados do pacote npm.</li>
+            <li><strong>Colar JSON de Tokens</strong> — Cole diretamente o conteúdo JSON dos tokens
+            do pacote <code>@lift/ds-tokens</code>.</li>
+          </ul>
+
+          <h4>Status de Comparação</h4>
+          <ul>
+            <li><strong>OK</strong> — Token existe em ambos (Figma e npm) com o mesmo valor.</li>
+            <li><strong>Divergente</strong> — Token existe em ambos mas com valores diferentes.</li>
+            <li><strong>Ausente</strong> — Token existe no Figma mas não foi encontrado no npm.</li>
+            <li><strong>Novo</strong> — Token existe no npm mas não foi encontrado no Figma.</li>
+          </ul>
+
+          <h4>Interpretando Resultados</h4>
+          <p>Os chips de resumo no topo mostram a contagem de cada status. Tokens divergentes e
+          ausentes devem ser investigados — podem indicar que o pacote npm está desatualizado ou
+          que tokens foram renomeados.</p>
+        </div>
+      </div>
+      <div class="validate-bar" style="flex-wrap:wrap;gap:8px">
+        <span class="validate-bar-text">Compare tokens do Figma com o Storybook ou cole um JSON de tokens.</span>
+        <div style="display:flex;gap:6px;margin-left:auto">
+          <button class="btn btn-blue" id="btn-sb-fetch" title="Buscar tokens publicados no Storybook para comparação com o Figma">&#10227; Buscar Tokens do Storybook</button>
+          <button class="btn" id="btn-load-file" title="Selecionar arquivo JSON local com tokens para comparação">&#128194; Carregar Arquivo JSON</button>
+          <button class="btn" id="btn-paste-json" title="Colar conteúdo JSON de tokens do pacote npm para comparação">&#128203; Colar JSON de Tokens</button>
+          <input type="file" id="file-input" accept=".json" style="display:none">
+        </div>
+      </div>
+      <!-- Área de colar JSON (oculta por padrão) -->
+      <div id="paste-area" style="display:none;padding:12px 16px;background:#f9fafb;border-bottom:1px solid #e5e5e5;flex-shrink:0">
+        <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:6px">
+          Cole o JSON de tokens do pacote <code style="background:#e5e7eb;padding:1px 5px;border-radius:3px">@lift/ds-tokens</code>
+        </div>
+        <div style="font-size:10px;color:#6b7280;margin-bottom:8px">
+          Formatos aceitos: <code>{"tokenName":"#hex"}</code> ou <code>{"tokenName":{"value":"#hex"}}</code> ou <code>{"tokenName":{"light":"#hex","dark":"#hex"}}</code>
+        </div>
+        <textarea id="json-paste-input" placeholder='{"Brand/Color/Primary/500": "#1066FA", ...}' style="width:100%;height:80px;padding:8px;border:1px solid #e5e5e5;border-radius:6px;font-size:10px;font-family:monospace;resize:vertical;outline:none"></textarea>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <button class="btn btn-blue" id="btn-parse-json">Comparar</button>
+          <button class="btn" id="btn-cancel-paste">Cancelar</button>
+        </div>
+      </div>
+      <div class="validate-results" id="validate-results">
+        <div class="validate-empty">
+          <div class="ve-icon">&#128269;</div>
+          Clique em "Buscar Tokens do Storybook" para iniciar a validação
+        </div>
+      </div>
+    </div>
+
+    <!-- Divergence View -->
+    <div class="validate-wrap hidden" id="divergence-wrap">
+      <!-- Documentação colapsável da aba Divergências -->
+      <div class="tab-help" id="help-divergence">
+        <div class="tab-help-toggle" onclick="toggleTabHelp('divergence')">
+          <span class="tab-help-icon">&#10067;</span>
+          <span class="tab-help-label">Como usar esta aba</span>
+          <span class="tab-help-chevron" id="help-chevron-divergence">&#9660;</span>
+        </div>
+        <div class="tab-help-content" id="help-content-divergence" style="display:none">
+          <h4>Como Carregar Dados</h4>
+          <p>A verificação de divergências compara tokens do Figma com os do pacote npm. Você
+          precisa carregar dados de ambas as fontes:</p>
+          <ul>
+            <li><strong>Dados Figma:</strong> Use "Sincronizar Documentação Enriquecida" para carregar
+            dados diretamente dos boards no canvas, ou "Carregar JSON Figma" para selecionar o arquivo
+            <code>tokens-figma-enriched.json</code>.</li>
+            <li><strong>Dados npm:</strong> Use "Carregar JSON npm" para selecionar o arquivo
+            <code>tokens-all-brands.json</code> do pacote npm.</li>
+          </ul>
+
+          <h4>Interpretando o Relatório</h4>
+          <ul>
+            <li><strong>Apenas no Figma</strong> — Tokens que existem no Figma mas não no npm.
+            Podem ser tokens novos que ainda não foram publicados.</li>
+            <li><strong>Apenas no npm</strong> — Tokens que existem no npm mas não no Figma.
+            Podem ser tokens removidos ou renomeados no Figma.</li>
+            <li><strong>Valor Diferente</strong> — Tokens que existem em ambos mas com valores
+            diferentes. Indica que o Figma ou o npm está desatualizado.</li>
+          </ul>
+
+          <h4>Monitoramento em Tempo Real</h4>
+          <p>Ative o <strong>"Monitoramento em Tempo Real"</strong> para que o plugin detecte
+          automaticamente quando tokens são alterados no Figma. Mudanças detectadas aparecem na
+          área de notificações acima dos resultados. Útil durante sessões de design para garantir
+          que alterações sejam rastreadas.</p>
+
+          <h4>Grupos de Botões</h4>
+          <ul>
+            <li><strong>Dados Figma</strong> — Botões para carregar tokens do Figma (do canvas ou de arquivo).</li>
+            <li><strong>Dados npm</strong> — Botão para carregar tokens do pacote npm.</li>
+            <li><strong>Ações</strong> — Botões para executar a comparação e ativar monitoramento.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="validate-bar" style="flex-wrap:wrap;gap:8px">
+        <span class="validate-bar-text">Compare tokens do Figma com o pacote npm e monitore mudanças em tempo real.</span>
+      </div>
+
+      <!-- Barra de ações organizada em grupos -->
+      <div class="div-action-bar">
+
+        <!-- Grupo: Dados Figma -->
+        <div class="div-btn-group">
+          <div class="div-btn-group-label">Dados Figma</div>
+          <div class="div-btn-group-buttons">
+            <button class="btn btn-blue" id="btn-sync-docs"
+              title="Carregar documentação enriquecida dos boards gerados no canvas do Figma">
+              &#128196; Sincronizar Documentação Enriquecida
+            </button>
+            <button class="btn" id="btn-sync-file"
+              title="Selecionar arquivo tokens-figma-enriched.json com dados exportados do Figma">
+              &#128194; Carregar JSON Figma
+            </button>
+          </div>
+        </div>
+
+        <!-- Separador visual -->
+        <div class="div-btn-sep"></div>
+
+        <!-- Grupo: Dados npm -->
+        <div class="div-btn-group">
+          <div class="div-btn-group-label">Dados npm</div>
+          <div class="div-btn-group-buttons">
+            <button class="btn" id="btn-div-file"
+              title="Selecionar arquivo tokens-all-brands.json com tokens do pacote npm">
+              &#128194; Carregar JSON npm
+            </button>
+          </div>
+        </div>
+
+        <!-- Separador visual -->
+        <div class="div-btn-sep"></div>
+
+        <!-- Grupo: Ações -->
+        <div class="div-btn-group">
+          <div class="div-btn-group-label">Ações</div>
+          <div class="div-btn-group-buttons">
+            <button class="btn btn-primary" id="btn-check-div"
+              title="Comparar tokens do Figma com os tokens do pacote npm e gerar relatório de divergências">
+              &#128269; Verificar Divergências entre Figma e npm
+            </button>
+            <button class="btn" id="btn-watch-toggle"
+              title="Ativar monitoramento contínuo de mudanças em tokens do Figma">
+              &#128064; Monitoramento em Tempo Real: Desativado
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="div-file-enriched" accept=".json" style="display:none">
+      <input type="file" id="div-file-npm" accept=".json" style="display:none">
+
+      <div id="div-notifications" style="display:none;padding:8px 16px;background:#fef3c7;border-bottom:1px solid #fbbf24;flex-shrink:0;max-height:120px;overflow-y:auto">
+        <div style="font-size:10px;font-weight:700;color:#92400e;margin-bottom:4px">&#128276; Mudanças detectadas</div>
+        <div id="div-notif-list" style="font-size:10px;color:#78350f"></div>
+      </div>
+      <div class="validate-results" id="divergence-results">
+        <div class="validate-empty">
+          <div class="ve-icon">&#128269;</div>
+          Clique em "Verificar Divergências entre Figma e npm" para comparar tokens.<br>
+          <span style="font-size:11px;color:#9ca3af;margin-top:4px;display:block">Se o fetch falhar, use os botões "Carregar JSON" para selecionar os arquivos manualmente:<br>
+          <code>docs/tokens-figma-enriched.json</code> e <code>docs/tokens-all-brands.json</code></span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /workspace -->
+<script>
+// ╔═══ ÍNDICE DE SEÇÕES (ui.html) ═══╗
+// ║ 1. Estado e Variáveis Globais          ~625
+// ║ 2. Utilitários (escape, formatação, WCAG) ~755
+// ║ 3. Constantes (GROUP_META, GROUP_GUIDELINES) ~1117
+// ║ 4. Navegação e Seleção de Collections  ~1307
+// ║ 5. Renderização de Tokens              ~1476
+// ║ 6. Renderização de Auditoria           ~2341
+// ║ 7. Renderização de Validação Storybook ~1925
+// ║ 8. Renderização de Divergências        ~2238
+// ║ 9. Handlers de Topbar                  ~2638
+// ║ 10. Handlers de Mensagem (onmessage)   ~2850
+// ╚═══════════════════════════════════╝
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 1: ESTADO E VARIÁVEIS GLOBAIS
+// Variáveis de estado da aplicação: dados de collections, seleção ativa,
+// modo de visualização, filtros e cache de tokens externos.
+// ═══════════════════════════════════════════════════════════════════════════
+
+var allData = [];
+var activeCollId = null;
+var activeMode = null; // string: nome do modo (ex: "Light")
+var selectedCollectionIds = {};  // { collectionId: true/false }
+var sbTokens = null;
+var searchQuery = "";
+var currentTab = "tokens"; // nome da aba ativa atualmente
+
+/**
+ * tabStateCache
+ *
+ * Cache de estado por aba. Preserva scroll, filtros e resultados
+ * quando o usuário troca de aba, permitindo restaurar o contexto ao voltar.
+ *
+ * @type {Object}
+ */
+var tabStateCache = {
+  tokens: null,     // { scrollTop, searchQuery, activeMode, activeCollId }
+  audit: null,      // { scrollTop }
+  validate: null,   // { scrollTop }
+  divergence: null  // { scrollTop }
+};
+
+/**
+ * modeNames(coll)
+ *
+ * Extrai os nomes dos modos de uma collection.
+ *
+ * @param {Object} coll - Objeto de collection com propriedade `modes` (array de {id, name})
+ * @returns {string[]} Array de nomes de modos
+ */
+function modeNames(coll) {
+  if (!coll || !coll.modes) return [];
+  return coll.modes.map(function(m) { return typeof m === "object" ? m.name : m; });
+}
+
+/**
+ * firstModeName(coll)
+ *
+ * Retorna o nome do primeiro modo de uma collection, ou null se não houver modos.
+ *
+ * @param {Object} coll - Objeto de collection
+ * @returns {string|null} Nome do primeiro modo
+ */
+function firstModeName(coll) {
+  var names = modeNames(coll);
+  return names.length > 0 ? names[0] : null;
+}
+
+/**
+ * saveTabState(tabName)
+ *
+ * Salva o estado atual da aba antes de trocar para outra.
+ * Captura scroll position do container scrollável da aba,
+ * e para a aba de tokens, também salva searchQuery e activeMode.
+ *
+ * @param {string} tabName - Nome da aba ("tokens", "audit", "validate", "divergence")
+ */
+function saveTabState(tabName) {
+  if (tabName === "tokens") {
+    var mainContent = document.getElementById("main-content");
+    tabStateCache.tokens = {
+      scrollTop: mainContent ? mainContent.scrollTop : 0,
+      searchQuery: searchQuery,
+      activeMode: activeMode,
+      activeCollId: activeCollId
+    };
+  } else if (tabName === "audit") {
+    var auditResults = document.getElementById("audit-results");
+    tabStateCache.audit = {
+      scrollTop: auditResults ? auditResults.scrollTop : 0
+    };
+  } else if (tabName === "validate") {
+    var validateResults = document.getElementById("validate-results");
+    tabStateCache.validate = {
+      scrollTop: validateResults ? validateResults.scrollTop : 0
+    };
+  } else if (tabName === "divergence") {
+    var divResults = document.getElementById("divergence-results");
+    tabStateCache.divergence = {
+      scrollTop: divResults ? divResults.scrollTop : 0
+    };
+  }
+}
+
+/**
+ * restoreTabState(tabName)
+ *
+ * Restaura o estado salvo quando o usuário volta para uma aba.
+ * Restaura scroll position e, para a aba de tokens, searchQuery e activeMode.
+ *
+ * @param {string} tabName - Nome da aba ("tokens", "audit", "validate", "divergence")
+ */
+function restoreTabState(tabName) {
+  var state = tabStateCache[tabName];
+  if (!state) return;
+
+  if (tabName === "tokens") {
+    searchQuery = state.searchQuery || "";
+    activeMode = state.activeMode || null;
+    activeCollId = state.activeCollId || null;
+    // Defer scroll restore to allow DOM to render
+    setTimeout(function() {
+      var mainContent = document.getElementById("main-content");
+      if (mainContent) mainContent.scrollTop = state.scrollTop || 0;
+    }, 0);
+  } else if (tabName === "audit") {
+    setTimeout(function() {
+      var auditResults = document.getElementById("audit-results");
+      if (auditResults) auditResults.scrollTop = state.scrollTop || 0;
+    }, 0);
+  } else if (tabName === "validate") {
+    setTimeout(function() {
+      var validateResults = document.getElementById("validate-results");
+      if (validateResults) validateResults.scrollTop = state.scrollTop || 0;
+    }, 0);
+  } else if (tabName === "divergence") {
+    setTimeout(function() {
+      var divResults = document.getElementById("divergence-results");
+      if (divResults) divResults.scrollTop = state.scrollTop || 0;
+    }, 0);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 2: UTILITÁRIOS (ESCAPE, FORMATAÇÃO, WCAG)
+// Funções utilitárias puras: escape de HTML/atributos, cálculos de contraste
+// WCAG, extração e formatação de valores de tokens, descrição semântica.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * escHtml(s)
+ *
+ * Escapa caracteres especiais de HTML para exibição segura em innerHTML.
+ *
+ * @param {string} s - String a ser escapada
+ * @returns {string} String com &, <, >, " escapados
+ */
+function escHtml(s) {
+  if (!s) return "";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/**
+ * escAttr(s)
+ *
+ * Escapa aspas simples para uso seguro em atributos HTML inline (onclick, etc.).
+ *
+ * @param {string} s - String a ser escapada
+ * @returns {string} String com aspas simples escapadas
+ */
+function escAttr(s) {
+  if (!s) return "";
+  return String(s).replace(/'/g,"\\'");
+}
+
+/**
+ * toLinear(c)
+ *
+ * Converte um componente de cor sRGB (0-255) para espaço linear.
+ * Usado internamente pelos cálculos de luminância WCAG.
+ *
+ * @param {number} c - Componente de cor (0-255)
+ * @returns {number} Valor linearizado
+ */
+function toLinear(c) {
+  c = c / 255;
+  return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+}
+
+/**
+ * luminance(r, g, b)
+ *
+ * Calcula a luminância relativa de uma cor RGB conforme WCAG 2.0.
+ *
+ * @param {number} r - Componente vermelho (0-255)
+ * @param {number} g - Componente verde (0-255)
+ * @param {number} b - Componente azul (0-255)
+ * @returns {number} Luminância relativa (0-1)
+ */
+function luminance(r, g, b) {
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+
+/**
+ * contrastRatio(l1, l2)
+ *
+ * Calcula a razão de contraste entre duas luminâncias conforme WCAG 2.0.
+ *
+ * @param {number} l1 - Luminância da primeira cor
+ * @param {number} l2 - Luminância da segunda cor
+ * @returns {number} Razão de contraste (1-21)
+ */
+function contrastRatio(l1, l2) {
+  var lighter = Math.max(l1, l2);
+  var darker  = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * wcagLevel(ratio)
+ *
+ * Determina o nível de conformidade WCAG com base na razão de contraste.
+ *
+ * @param {number} ratio - Razão de contraste
+ * @returns {string} "AAA", "AA", "AA Large" ou "Fail"
+ */
+function wcagLevel(ratio) {
+  if (ratio >= 7)   return "AAA";
+  if (ratio >= 4.5) return "AA";
+  if (ratio >= 3)   return "AA Large";
+  return "Fail";
+}
+
+/**
+ * wcagStyle(level)
+ *
+ * Retorna a classe CSS correspondente ao nível WCAG para badges visuais.
+ *
+ * @param {string} level - Nível WCAG ("AAA", "AA", "AA Large", "Fail")
+ * @returns {string} Classe CSS do badge
+ */
+function wcagStyle(level) {
+  if (level === "AAA")      return "badge badge-aaa";
+  if (level === "AA")       return "badge badge-aa";
+  if (level === "AA Large") return "badge badge-aa";
+  return "badge badge-fail";
+}
+
+/**
+ * hexToRgb(hex)
+ *
+ * Converte uma string hexadecimal de cor para objeto RGB.
+ *
+ * @param {string} hex - Cor em formato "#RGB" ou "#RRGGBB"
+ * @returns {Object|null} Objeto {r, g, b} com valores 0-255, ou null se inválido
+ */
+function hexToRgb(hex) {
+  if (!hex) return null;
+  hex = hex.replace(/^#/, "");
+  if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  if (hex.length !== 6) return null;
+  return { r: parseInt(hex.slice(0,2),16), g: parseInt(hex.slice(2,4),16), b: parseInt(hex.slice(4,6),16) };
+}
+
+/**
+ * getContrast(hex, bgHex)
+ *
+ * Calcula a razão de contraste entre uma cor de foreground e background.
+ *
+ * @param {string} hex - Cor de foreground em hex
+ * @param {string} bgHex - Cor de background em hex (default: "#ffffff")
+ * @returns {number|null} Razão de contraste, ou null se cores inválidas
+ */
+function getContrast(hex, bgHex) {
+  var fg = hexToRgb(hex);
+  var bg = hexToRgb(bgHex || "#ffffff");
+  if (!fg || !bg) return null;
+  return contrastRatio(luminance(fg.r,fg.g,fg.b), luminance(bg.r,bg.g,bg.b));
+}
+
+/**
+ * contrastBadges(hex)
+ *
+ * Gera HTML de badges WCAG mostrando contraste contra branco e preto.
+ *
+ * @param {string} hex - Cor em formato hex
+ * @returns {string} HTML com badges de contraste WCAG
+ */
+function contrastBadges(hex) {
+  if (!hex) return "";
+  var onWhite = getContrast(hex, "#ffffff");
+  var onBlack = getContrast(hex, "#000000");
+  var html = "";
+  if (onWhite !== null) {
+    var lv1 = wcagLevel(onWhite);
+    html += '<span class="' + wcagStyle(lv1) + '">&#11036; ' + onWhite.toFixed(1) + " " + lv1 + "</span>";
+  }
+  if (onBlack !== null) {
+    var lv2 = wcagLevel(onBlack);
+    html += '<span class="' + wcagStyle(lv2) + '">&#11035; ' + onBlack.toFixed(1) + " " + lv2 + "</span>";
+  }
+  return html;
+}
+
+/**
+ * getTokenValue(token, mode)
+ *
+ * Extrai o valor de um token para um modo específico.
+ *
+ * @param {Object} token - Objeto de token com propriedade `values` ou `value`
+ * @param {string} mode - Nome do modo (ex: "Light", "Dark")
+ * @returns {*} Valor do token no modo, ou null
+ */
+function getTokenValue(token, mode) {
+  if (!token) return null;
+  if (token.values && mode && token.values[mode]) return token.values[mode];
+  if (token.value) return token.value;
+  return null;
+}
+
+/**
+ * getHex(val)
+ *
+ * Extrai o valor hexadecimal de um valor de token (string ou objeto).
+ *
+ * @param {*} val - Valor do token (string hex ou objeto com propriedade `hex`)
+ * @returns {string|null} Valor hex ou null
+ */
+function getHex(val) {
+  if (!val) return null;
+  if (typeof val === "string" && val.match(/^#[0-9a-fA-F]{3,8}$/)) return val;
+  if (typeof val === "object" && val.hex) return val.hex;
+  return null;
+}
+
+/**
+ * isColorToken(token, mode)
+ *
+ * Verifica se um token é do tipo cor (possui valor hex) no modo especificado.
+ *
+ * @param {Object} token - Objeto de token
+ * @param {string} mode - Nome do modo
+ * @returns {boolean} true se o token tem valor hex
+ */
+function isColorToken(token, mode) {
+  return !!getHex(getTokenValue(token, mode));
+}
+
+/**
+ * formatValue(val)
+ *
+ * Formata o valor de um token para exibição legível.
+ * Suporta aliases, hex com cadeia de resolução, strings e objetos.
+ *
+ * @param {*} val - Valor do token
+ * @returns {string} Valor formatado para exibição
+ */
+function formatValue(val) {
+  if (!val) return "—";
+  if (typeof val === "object" && val.alias) return "-> " + val.alias;
+  if (typeof val === "object" && val.hex) {
+    var chain = Array.isArray(val.chain) && val.chain.length ? val.chain.join(" -> ") + " -> " : "";
+    return chain + val.hex.toUpperCase();
+  }
+  if (typeof val === "string") return val;
+  return JSON.stringify(val);
+}
+
+/**
+ * getTokenDescription(name)
+ *
+ * Gera uma descrição semântica em português para um token com base no seu nome.
+ * Analisa segmentos do nome para detectar: role (surface, on-surface, container,
+ * border, icon, text), hierarquia (primary, secondary, tertiary), estado
+ * (hover, active, focus, disabled, error) e feedback (success, warning, critical, info).
+ *
+ * @param {string} name - Nome completo do token (ex: "Dynamic/Primary/Surface/Hover")
+ * @returns {string} Descrição semântica em português
+ */
+function getTokenDescription(name) {
+  var lower = name.toLowerCase();
+  var parts = lower.split(/[\/\.\-_\s]+/);
+  var role = null, hier = null, state = "default", fb = null;
+  var joined = parts.join("-");
+  if (joined.indexOf("on-surface") !== -1) role = "on-surface";
+  else if (joined.indexOf("on-container") !== -1) role = "on-container";
+  else if (parts.indexOf("surface") !== -1) role = "surface";
+  else if (parts.indexOf("container") !== -1) role = "container";
+  else if (parts.indexOf("border") !== -1 || parts.indexOf("stroke") !== -1) role = "border";
+  else if (parts.indexOf("icon") !== -1) role = "icon";
+  else if (parts.indexOf("text") !== -1) role = "text";
+  if (parts.indexOf("primary") !== -1) hier = "primary";
+  else if (parts.indexOf("secondary") !== -1) hier = "secondary";
+  else if (parts.indexOf("tertiary") !== -1) hier = "tertiary";
+  if (parts.indexOf("hover") !== -1) state = "hover";
+  else if (parts.indexOf("active") !== -1) state = "active";
+  else if (parts.indexOf("focus") !== -1) state = "focus";
+  else if (parts.indexOf("disabled") !== -1) state = "disabled";
+  else if (parts.indexOf("error") !== -1) state = "error";
+  if (parts.indexOf("success") !== -1) fb = "success";
+  else if (parts.indexOf("warning") !== -1) fb = "warning";
+  else if (parts.indexOf("critical") !== -1 || parts.indexOf("danger") !== -1) fb = "critical";
+  else if (parts.indexOf("info") !== -1) fb = "info";
+  var roleLabels = { "surface":"Fundo do componente","on-surface":"Cor do conteudo sobre o surface","container":"Fundo de agrupamento acima do surface","on-container":"Conteudo sobre o container","border":"Contorno do componente","icon":"Cor de icones internos","text":"Cor de texto interno" };
+  var base = role ? (roleLabels[role] || "Token de estilo") : "Token de estilo";
+  if (hier) base += " " + ({primary:"de maior hierarquia",secondary:"de hierarquia secundaria",tertiary:"de menor hierarquia"}[hier] || "");
+  if (state && state !== "default") base += " " + ({hover:"no hover",active:"no estado ativo",focus:"em foco (teclado)",disabled:"desabilitado",error:"em erro"}[state] || "");
+  if (fb) base += ". " + ({success:"Sinaliza conclusao ou estado valido.",warning:"Indica atencao ou risco moderado.",critical:"Marca erro, falha ou acao destrutiva.",info:"Informacao complementar sem urgencia."}[fb] || "");
+  return base + ".";
+}
+
+/**
+ * groupByPrefix(tokens)
+ *
+ * Agrupa um array de tokens pelo primeiro segmento do nome (antes da primeira "/").
+ * Tokens sem "/" são agrupados sob "outros".
+ *
+ * @param {Object[]} tokens - Array de objetos de token com propriedade `name`
+ * @returns {Object} Mapa de prefixo → array de tokens
+ */
+function groupByPrefix(tokens) {
+  var groups = {};
+  for (var i = 0; i < tokens.length; i++) {
+    var t = tokens[i];
+    var parts = (t.name || "").split("/");
+    var prefix = parts.length > 1 ? parts[0] : "outros";
+    if (!groups[prefix]) groups[prefix] = [];
+    groups[prefix].push(t);
+  }
+  return groups;
+}
+
+/**
+ * switchView(view)
+ *
+ * Alterna a aba visível na área principal (tokens, audit, validate, divergence).
+ * Salva o estado da aba atual antes de trocar e restaura o estado da nova aba.
+ * Esconde todas as wraps e ativa apenas a selecionada.
+ *
+ * @param {string} view - Nome da view ("tokens", "audit", "validate", "divergence")
+ */
+function switchView(view) {
+  // Salva estado da aba atual antes de trocar
+  if (currentTab && currentTab !== view) {
+    saveTabState(currentTab);
+  }
+
+  var views = ["tokens","audit","validate","divergence"];
+  views.forEach(function(v) {
+    var wrap = document.getElementById(v + "-wrap");
+    var tab  = document.getElementById("tab-" + v);
+    if (wrap) wrap.classList.toggle("hidden", v !== view);
+    if (tab)  tab.classList.toggle("active",  v === view);
+  });
+  // tokens-wrap tem id diferente
+  var tw = document.getElementById("tokens-wrap");
+  if (tw) tw.classList.toggle("hidden", view !== "tokens");
+  var tt = document.getElementById("tab-tokens");
+  if (tt) tt.classList.toggle("active", view === "tokens");
+
+  // Restaura estado da nova aba e atualiza currentTab
+  var previousTab = currentTab;
+  currentTab = view;
+  if (previousTab !== view) {
+    restoreTabState(view);
+  }
+}
+
+/**
+ * setStatus(msg, type)
+ *
+ * Atualiza o texto e o indicador visual de status na topbar.
+ *
+ * @param {string} msg - Mensagem de status
+ * @param {string} type - Classe CSS do dot ("ok", "busy", "err", ou vazio)
+ */
+function setStatus(msg, type) {
+  var dot  = document.getElementById("status-dot");
+  var text = document.getElementById("status-text");
+  text.textContent = msg;
+  dot.className = "status-dot" + (type ? " " + type : "");
+}
+
+/**
+ * toggleTabHelp(tabName)
+ *
+ * Alterna a visibilidade da área de documentação de uma aba.
+ * Atualiza o ícone chevron para indicar o estado (aberto/fechado).
+ *
+ * @param {string} tabName - Nome da aba ("tokens", "audit", "validate", "divergence")
+ */
+function toggleTabHelp(tabName) {
+  var content = document.getElementById("help-content-" + tabName);
+  var chevron = document.getElementById("help-chevron-" + tabName);
+  if (!content || !chevron) return;
+
+  if (content.style.display === "none") {
+    content.style.display = "block";
+    chevron.classList.add("open");
+  } else {
+    content.style.display = "none";
+    chevron.classList.remove("open");
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 3: CONSTANTES (GROUP_META, GROUP_GUIDELINES)
+// Metadados e diretrizes dos grupos semânticos de tokens (Dynamic, Interactive,
+// Static, Inputable, Core, Elevation). Usados na renderização de headers e guidelines.
+// ═══════════════════════════════════════════════════════════════════════════
+
+var GROUP_META = {
+  dynamic: {
+    label: "Dynamic", colorHex: "#1066fa",
+    icon: "&#9889;",
+    description: "Elementos que disparam acoes e mudam o estado da navegacao. Use em botoes de submit, CTAs e acoes destrutivas.",
+    examples: "Botao Salvar, Botao Excluir, Link de navegacao principal",
+    whenUse: [
+      "Botao que submete um formulario ou navega para outra rota",
+      "CTA principal de uma pagina (ex: Comecar agora, Confirmar compra)",
+      "Acao destrutiva que requer confirmacao do usuario"
+    ],
+    whenNotUse: [
+      "Accordion ou tab — use Interactive",
+      "Card ou banner sem clique — use Static",
+      "Campo de formulario — use Inputable"
+    ]
+  },
+  interactive: {
+    label: "Interactive", colorHex: "#6c1bed",
+    icon: "&#128393;",
+    description: "Elementos que respondem ao usuario sem mudar a rota ou o fluxo principal. Cobrem expansao, colapso e revelacao de conteudo na mesma tela.",
+    examples: "Accordion, Tabs, Tooltip, Dropdown de menu",
+    whenUse: [
+      "Accordion que expande secoes de conteudo",
+      "Tabs que alternam entre paineis na mesma pagina",
+      "Dropdown ou popover que revela opcoes localmente"
+    ],
+    whenNotUse: [
+      "Botao de acao principal — use Dynamic",
+      "Elemento sem nenhuma interacao — use Static",
+      "Campo de entrada de dados — use Inputable"
+    ]
+  },
+  static: {
+    label: "Static", colorHex: "#059669",
+    icon: "&#128444;",
+    description: "Elementos de composicao visual que nao respondem a interacoes diretas. Estruturam o layout e agrupam conteudo sem oferecer acao ao usuario.",
+    examples: "Card de conteudo, Banner informativo, Divisor de secao",
+    whenUse: [
+      "Card que exibe informacoes sem acao clicavel",
+      "Banner de aviso ou destaque editorial",
+      "Divisor visual entre secoes de uma pagina"
+    ],
+    whenNotUse: [
+      "Qualquer elemento que o usuario possa clicar ou interagir",
+      "Campo de formulario"
+    ]
+  },
+  inputable: {
+    label: "Inputable", colorHex: "#d97706",
+    icon: "&#9998;",
+    description: "Elementos de coleta de dados do usuario. Cobrem todos os controles de formulario, desde campos de texto ate seletores e toggles.",
+    examples: "Input de texto, Checkbox, Select, Date picker, Switch",
+    whenUse: [
+      "Campo de texto, senha ou busca",
+      "Checkbox, radio button ou switch",
+      "Select, combobox ou date picker"
+    ],
+    whenNotUse: [
+      "Botao de envio do formulario — use Dynamic",
+      "Elemento de navegacao ou interacao local"
+    ]
+  },
+  core: {
+    label: "Core", colorHex: "#6b7280",
+    icon: "&#128312;",
+    description: "Tokens fundamentais do sistema — texto, icones, bordas, links, fundo de pagina. Fazem parte da camada Usage mas nao devem ser usados diretamente em componentes de UI.",
+    examples: "Texto principal, divisor, link, fundo da pagina",
+    whenUse: [
+      "Como referencia (alias) em tokens de usage",
+      "Para textos, icones, bordas e links em contextos genericos"
+    ],
+    whenNotUse: [
+      "Diretamente em componentes de UI — prefira tokens semanticos (Dynamic, Interactive, Static, Inputable)"
+    ]
+  },
+  elevation: {
+    label: "Elevation", colorHex: "#525252",
+    icon: "&#128312;",
+    description: "Sombras e superficies de elevacao para criar hierarquia visual entre camadas sobrepostas.",
+    examples: "Modal, Drawer, Card elevado, Popover, Dropdown",
+    whenUse: [
+      "Modais, drawers e dialogs",
+      "Popovers, tooltips e menus flutuantes",
+      "Cards elevados sobre o fundo"
+    ],
+    whenNotUse: [
+      "Elementos planos sem necessidade de destaque",
+      "Fundos de pagina principal"
+    ]
+  }
+};
+
+var GROUP_GUIDELINES = {
+  dynamic: {
+    do: [
+      "Use em botoes que submetem formularios ou iniciam um fluxo de navegacao",
+      "Aplique em CTAs principais de uma pagina (ex: Salvar, Confirmar, Continuar)",
+      "Use para acoes destrutivas que exigem confirmacao do usuario",
+      "Combine primary para a acao principal e secondary para a acao alternativa",
+      "Mantenha no maximo um botao primary visivel por area de acao"
+    ],
+    dont: [
+      "Nao use em accordions, tabs ou qualquer elemento que nao muda a rota",
+      "Nao aplique em cards ou banners informativos — use Static",
+      "Nao use como background de layout ou secoes de pagina",
+      "Nao use em campos de formulario — use Inputable",
+      "Evite multiplos botoes primary na mesma area — dilui a hierarquia visual"
+    ]
+  },
+  interactive: {
+    do: [
+      "Use em accordions que expandem e colapsam secoes de conteudo",
+      "Aplique em tabs que alternam entre paineis na mesma pagina",
+      "Use em dropdowns, popovers e tooltips que revelam informacao localmente",
+      "Aplique estados hover e focus para indicar interatividade ao usuario",
+      "Use primary para o item ativo ou selecionado dentro do componente"
+    ],
+    dont: [
+      "Nao use em botoes de navegacao principal — use Dynamic",
+      "Nao aplique em elementos puramente visuais sem resposta ao clique",
+      "Nao use em campos de entrada de dados — use Inputable",
+      "Nao omita o estado hover — elementos interativos precisam de feedback visual",
+      "Nao use tertiary como unico indicador de interatividade"
+    ]
+  },
+  static: {
+    do: [
+      "Use em cards de conteudo que exibem informacao sem acao associada",
+      "Aplique em banners editoriais, destaques e secoes informativas",
+      "Use container/on-container para criar hierarquia visual entre camadas",
+      "Aplique em divisores e separadores de secao",
+      "Use para estruturar o layout sem criar expectativa de interacao"
+    ],
+    dont: [
+      "Nao use em elementos clicaveis — use Dynamic ou Interactive",
+      "Nao aplique container onde surface ja e suficiente",
+      "Nao use em campos de formulario — use Inputable",
+      "Nao misture tokens static com tokens dynamic no mesmo componente interativo",
+      "Nao use on-container sobre surface — respeite a hierarquia de camadas"
+    ]
+  },
+  inputable: {
+    do: [
+      "Use em todos os controles de formulario: inputs, selects, checkboxes, radios e switches",
+      "Aplique o estado error quando a validacao falhar",
+      "Use o estado focus para garantir acessibilidade na navegacao por teclado",
+      "Aplique disabled quando o campo nao estiver disponivel para edicao",
+      "Mantenha consistencia visual entre todos os campos do mesmo formulario"
+    ],
+    dont: [
+      "Nao use em botoes de submit — use Dynamic",
+      "Nao aplique em elementos de navegacao ou interacao local",
+      "Nao omita o estado error em validacoes",
+      "Nao use surface de inputable como background de secao ou layout",
+      "Nao ignore o estado disabled — campos inativos precisam comunicar sua indisponibilidade"
+    ]
+  },
+  core: {
+    do: [
+      "Use como referencia (alias) em tokens de usage",
+      "Para textos, icones, bordas e links em contextos genericos",
+      "Referencie ao criar novos tokens semanticos"
+    ],
+    dont: [
+      "Nao use diretamente em componentes de UI",
+      "Prefira tokens semanticos (Dynamic, Interactive, Static, Inputable)",
+      "Nao altere sem avaliar impacto nos tokens de usage"
+    ]
+  },
+  elevation: {
+    do: [
+      "Use para modais, drawers e dialogs",
+      "Aplique em popovers, tooltips e menus flutuantes",
+      "Use em cards elevados sobre o fundo da pagina"
+    ],
+    dont: [
+      "Nao use em elementos planos sem necessidade de destaque",
+      "Nao aplique em fundos de pagina principal",
+      "Nao misture niveis de elevacao sem hierarquia clara"
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 4: NAVEGAÇÃO E SELEÇÃO DE COLLECTIONS
+// Funções de renderização e interação da barra lateral (Left_Nav):
+// listagem de collections, seleção ativa, barra de modos e troca de modo.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * renderLeftNav()
+ *
+ * Renderiza a lista de collections na barra lateral esquerda (Left_Nav).
+ * Cada item exibe: dot colorido (cor semântica do grupo), nome da collection
+ * e contagem de tokens. O item ativo recebe destaque visual.
+ *
+ * @expects allData — array global de CollectionData populado via postMessage "result"
+ * @inserts innerHTML em #leftnav-list
+ */
+function renderLeftNav() {
+  var list = document.getElementById("leftnav-list");
+  if (!allData || allData.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="height:120px"><div class="es-icon">&#128274;</div><div class="es-text">Sem dados</div></div>';
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < allData.length; i++) {
+    var coll = allData[i];
+    var gKey = (coll.name || "").toLowerCase().split(/[\s_\-\/]+/)[0];
+    var meta = GROUP_META[gKey];
+    var color = meta ? meta.colorHex : "#6b7280";
+    var count = coll.tokens ? coll.tokens.length : 0;
+    var isActive = coll.id === activeCollId;
+    var isChecked = !!selectedCollectionIds[coll.id];
+    html += '<div class="leftnav-item' + (isActive ? " active" : "") + '" onclick="selectColl(\'' + coll.id + '\')">';
+    html += '<input type="checkbox" class="leftnav-checkbox" ' + (isChecked ? 'checked ' : '') + 'onclick="event.stopPropagation(); toggleCollectionSelection(\'' + coll.id + '\')" />';
+    html += '<div class="nav-dot" style="background:' + color + '"></div>';
+    html += '<span class="leftnav-name">' + escHtml(coll.name) + '</span>';
+    html += '<span class="leftnav-count">' + count + '</span>';
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
+
+/**
+ * toggleCollectionSelection(collectionId)
+ *
+ * Alterna o estado de seleção de uma collection.
+ * Se a collection estava selecionada, desmarca; se não estava, marca.
+ *
+ * @param {string} collectionId - ID da collection a alternar
+ */
+function toggleCollectionSelection(collectionId) {
+  if (selectedCollectionIds[collectionId]) {
+    selectedCollectionIds[collectionId] = false;
+  } else {
+    selectedCollectionIds[collectionId] = true;
+  }
+  renderLeftNav();
+}
+
+/**
+ * selectAllCollections()
+ *
+ * Marca todas as collections como selecionadas.
+ * Itera sobre allData e registra cada ID em selectedCollectionIds.
+ */
+function selectAllCollections() {
+  for (var i = 0; i < allData.length; i++) {
+    selectedCollectionIds[allData[i].id] = true;
+  }
+  renderLeftNav();
+}
+
+/**
+ * deselectAllCollections()
+ *
+ * Desmarca todas as collections.
+ * Reseta selectedCollectionIds para um objeto vazio.
+ */
+function deselectAllCollections() {
+  selectedCollectionIds = {};
+  renderLeftNav();
+}
+
+/**
+ * getSelectedIds()
+ *
+ * Retorna um array com os IDs das collections atualmente selecionadas.
+ *
+ * @returns {string[]} Array de IDs de collections selecionadas
+ */
+function getSelectedIds() {
+  var ids = [];
+  var keys = Object.keys(selectedCollectionIds);
+  for (var i = 0; i < keys.length; i++) {
+    if (selectedCollectionIds[keys[i]]) {
+      ids.push(keys[i]);
+    }
+  }
+  return ids;
+}
+
+/**
+ * selectColl(id)
+ *
+ * Seleciona uma collection pelo ID e atualiza toda a visualização:
+ * re-renderiza Left_Nav com destaque, configura o modo ativo,
+ * renderiza a barra de modos e a view de tokens agrupados.
+ *
+ * @param {string} id - ID da collection a selecionar
+ * @expects allData — array global de CollectionData
+ * @inserts Atualiza #leftnav-list, #mode-bar e #main-content
+ */
+function selectColl(id) {
+  activeCollId = id;
+  var coll = null;
+  for (var i = 0; i < allData.length; i++) {
+    if (allData[i].id === id) { coll = allData[i]; break; }
+  }
+  renderLeftNav();
+  if (!coll) return;
+  var names = modeNames(coll);
+  if (names.length > 0 && (!activeMode || names.indexOf(activeMode) === -1)) {
+    activeMode = names[0];
+  }
+  renderModeBar(coll);
+  renderGroupView(coll, activeMode);
+}
+
+/**
+ * renderModeBar(coll)
+ *
+ * Renderiza os chips de seleção de modo (ex: "Light", "Dark") na barra
+ * abaixo das tabs. Se a collection tem apenas um modo, a barra fica vazia.
+ *
+ * @param {Object} coll - Objeto CollectionData com propriedade `modes`
+ * @inserts innerHTML em #mode-bar
+ */
+function renderModeBar(coll) {
+  var bar = document.getElementById("mode-bar");
+  var names = modeNames(coll);
+  if (names.length <= 1) { bar.innerHTML = ""; return; }
+  var html = '<span class="mode-label">Modo:</span>';
+  for (var i = 0; i < names.length; i++) {
+    var m = names[i];
+    var isActive = m === activeMode;
+    html += '<div class="mode-chip' + (isActive ? " active" : "") + '" onclick="selectMode(\'' + escAttr(m) + '\')">' + escHtml(m) + '</div>';
+  }
+  bar.innerHTML = html;
+}
+
+/**
+ * selectMode(mode)
+ *
+ * Altera o modo ativo (ex: "Light" → "Dark") e re-renderiza a barra
+ * de modos e a view de tokens para refletir os valores do novo modo.
+ *
+ * @param {string} mode - Nome do modo a ativar
+ * @inserts Atualiza #mode-bar e #main-content
+ */
+function selectMode(mode) {
+  activeMode = mode;
+  var coll = null;
+  for (var i = 0; i < allData.length; i++) {
+    if (allData[i].id === activeCollId) { coll = allData[i]; break; }
+  }
+  if (!coll) return;
+  renderModeBar(coll);
+  renderGroupView(coll, activeMode);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 5: RENDERIZAÇÃO DE TOKENS
+// Funções de renderização da aba "Tokens": view principal com agrupamento
+// semântico, search, headers de grupo, guidelines, previews de componentes,
+// grid de cards de cor e tabela de tokens não-cor.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * renderGroupView(coll, mode)
+ *
+ * Renderiza a view principal de tokens para uma collection e modo.
+ * Agrupa tokens pelo primeiro segmento do nome (grupo semântico),
+ * ordena por prioridade semântica, e renderiza: search bar, header
+ * do grupo com guidelines, subgrupos com cards de cor e tabela.
+ *
+ * @param {Object} coll - Objeto CollectionData com propriedade `tokens`
+ * @param {string} mode - Nome do modo ativo (ex: "Light")
+ * @expects GROUP_META, GROUP_GUIDELINES — constantes de metadados de grupo
+ * @inserts innerHTML em #main-content
+ */
+function renderGroupView(coll, mode) {
+  var content = document.getElementById("main-content");
+  if (!coll || !coll.tokens || coll.tokens.length === 0) {
+    content.innerHTML = '<div class="empty-state"><div class="es-icon">&#128274;</div><div class="es-text">Sem tokens nesta collection</div></div>';
+    return;
+  }
+
+  var html = "";
+
+  // ── Search bar ──
+  html += '<div style="margin-bottom:16px">';
+  html += '<input id="search-input" type="text" placeholder="&#128269; Buscar token..." value="' + escAttr(searchQuery) + '" oninput="onSearch(this.value)" ';
+  html += 'style="width:100%;padding:8px 12px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:12px;font-family:inherit;outline:none;background:#fff;color:#1a1a1a">';
+  html += '</div>';
+
+  // Filtra tokens pelo search
+  var tokens = coll.tokens;
+  if (searchQuery) {
+    var q = searchQuery.toLowerCase();
+    tokens = tokens.filter(function(t) {
+      return (t.name || "").toLowerCase().indexOf(q) !== -1;
+    });
+  }
+
+  if (tokens.length === 0) {
+    html += '<div class="empty-state" style="height:80px"><div class="es-text">Nenhum token encontrado para "' + escHtml(searchQuery) + '"</div></div>';
+    content.innerHTML = html;
+    return;
+  }
+
+  // ── Agrupa tokens pelo primeiro segmento do nome ──
+  // Ex: "Dynamic/Primary/Surface" → grupo "Dynamic"
+  // Ex: "Brand/Color/Neutral/100" → grupo "Brand"
+  var SEMANTIC_ORDER = ["dynamic","interactive","static","inputable","core","elevation","brand","usage","primitive","base","semantic"];
+  var groups = {};
+  var groupOrder = [];
+
+  for (var i = 0; i < tokens.length; i++) {
+    var tok = tokens[i];
+    var firstSeg = (tok.name || "").split("/")[0] || "outros";
+    var gKey = firstSeg.toLowerCase();
+    if (!groups[gKey]) {
+      groups[gKey] = { label: firstSeg, tokens: [] };
+      groupOrder.push(gKey);
+    }
+    groups[gKey].tokens.push(tok);
+  }
+
+  // Ordena grupos: semânticos conhecidos primeiro, depois alfabético
+  groupOrder.sort(function(a, b) {
+    var ia = SEMANTIC_ORDER.indexOf(a);
+    var ib = SEMANTIC_ORDER.indexOf(b);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    return a.localeCompare(b);
+  });
+
+  // ── Renderiza cada grupo ──
+  for (var gi = 0; gi < groupOrder.length; gi++) {
+    var gk = groupOrder[gi];
+    var group = groups[gk];
+    var meta = GROUP_META[gk] || {};
+    var color = meta.colorHex || "#6b7280";
+    var icon  = meta.icon || "&#128312;";
+    var label = meta.label || group.label;
+    var gTokens = group.tokens;
+
+    // ── Header do grupo ──
+    html += '<div style="margin-bottom:20px">';
+
+    // Título do grupo com cor semântica
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:14px 16px;background:#fff;border-radius:10px;border-left:4px solid ' + color + ';box-shadow:0 1px 3px rgba(0,0,0,.06)">';
+    html += '<div style="width:32px;height:32px;border-radius:8px;background:' + color + '22;color:' + color + ';display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">' + icon + '</div>';
+    html += '<div style="flex:1">';
+    html += '<div style="font-size:14px;font-weight:700;color:#111">' + escHtml(label) + '</div>';
+    if (meta.description) {
+      html += '<div style="font-size:11px;color:#6b7280;margin-top:2px">' + escHtml(meta.description) + '</div>';
+    }
+    html += '</div>';
+    html += '<span style="font-size:10px;color:#9ca3af;background:#f3f4f6;padding:2px 8px;border-radius:10px">' + gTokens.length + ' tokens</span>';
+    html += '</div>';
+
+    // Guidelines compactas (só se for grupo semântico conhecido)
+    if (meta.label && GROUP_GUIDELINES[gk]) {
+      var gl = GROUP_GUIDELINES[gk];
+      html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">';
+      html += '<div style="background:#f0fdf4;border-radius:8px;padding:10px 12px">';
+      html += '<div style="font-size:9px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">&#10003; Do</div>';
+      for (var di = 0; di < Math.min(gl.do.length, 2); di++) {
+        html += '<div style="font-size:10px;color:#374151;padding:1px 0">• ' + escHtml(gl.do[di]) + '</div>';
+      }
+      html += '</div>';
+      html += '<div style="background:#fef2f2;border-radius:8px;padding:10px 12px">';
+      html += '<div style="font-size:9px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">&#10007; Don\'t</div>';
+      for (var dni = 0; dni < Math.min(gl.dont.length, 2); dni++) {
+        html += '<div style="font-size:10px;color:#374151;padding:1px 0">• ' + escHtml(gl.dont[dni]) + '</div>';
+      }
+      html += '</div>';
+      html += '</div>';
+    }
+
+    // ── Subgrupos dentro do grupo (segundo segmento) ──
+    var subGroups = {};
+    var subOrder = [];
+    for (var si = 0; si < gTokens.length; si++) {
+      var stok = gTokens[si];
+      var parts = (stok.name || "").split("/");
+      var subKey = parts.length > 2 ? parts.slice(1, -1).join(" / ") : (parts[1] || "(raiz)");
+      if (!subGroups[subKey]) { subGroups[subKey] = []; subOrder.push(subKey); }
+      subGroups[subKey].push(stok);
+    }
+
+    for (var sgi = 0; sgi < subOrder.length; sgi++) {
+      var sk = subOrder[sgi];
+      var subToks = subGroups[sk];
+
+      // Label do subgrupo
+      html += '<div style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:8px">';
+      html += escHtml(sk);
+      html += '<span style="flex:1;height:1px;background:#e5e5e5;display:inline-block"></span>';
+      html += '</div>';
+
+      // Separa cor de não-cor
+      var colorToks = [], otherToks = [];
+      for (var ti = 0; ti < subToks.length; ti++) {
+        if (isColorToken(subToks[ti], mode)) colorToks.push(subToks[ti]);
+        else otherToks.push(subToks[ti]);
+      }
+
+      if (colorToks.length > 0) html += renderTokenGrid(colorToks, mode);
+      if (otherToks.length > 0) html += renderTokenTable(otherToks, mode);
+    }
+
+    html += '</div>'; // fecha grupo
+  }
+
+  content.innerHTML = html;
+
+  if (searchQuery) {
+    var inp = document.getElementById("search-input");
+    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  }
+}
+
+/**
+ * onSearch(val)
+ *
+ * Handler do campo de busca de tokens. Atualiza a query global
+ * e re-renderiza a view de tokens filtrada.
+ *
+ * @param {string} val - Texto digitado no campo de busca
+ * @inserts Re-renderiza #main-content via renderGroupView
+ */
+function onSearch(val) {
+  searchQuery = val;
+  var coll = null;
+  for (var i = 0; i < allData.length; i++) {
+    if (allData[i].id === activeCollId) { coll = allData[i]; break; }
+  }
+  if (coll) renderGroupView(coll, activeMode);
+}
+
+/**
+ * renderGroupHeader(coll, gKey)
+ *
+ * Renderiza o header visual de um grupo semântico com ícone, label,
+ * descrição, exemplos e cards "Quando usar / Quando não usar".
+ *
+ * @param {Object} coll - Objeto CollectionData
+ * @param {string} gKey - Chave do grupo semântico (ex: "dynamic", "interactive")
+ * @returns {string} HTML do header do grupo
+ */
+function renderGroupHeader(coll, gKey) {
+  var meta = GROUP_META[gKey] || {};
+  var color = meta.colorHex || "#6b7280";
+  var icon  = meta.icon || "&#128312;";
+  var label = meta.label || coll.name;
+  var desc  = meta.description || "";
+  var examples = meta.examples || "";
+  var html = '<div class="group-header">';
+  html += '<div class="group-header-icon" style="background:' + color + '22;color:' + color + '">' + icon + '</div>';
+  html += '<div class="group-header-body">';
+  html += '<div class="group-header-title">' + escHtml(label) + '</div>';
+  if (desc) html += '<div class="group-header-desc">' + escHtml(desc) + '</div>';
+  if (examples) html += '<div class="group-header-examples"><strong>Exemplos:</strong> ' + escHtml(examples) + '</div>';
+  if (meta.whenUse || meta.whenNotUse) {
+    html += '<div class="when-grid">';
+    if (meta.whenUse && meta.whenUse.length) {
+      html += '<div class="when-box do"><div class="when-box-title">&#10003; Quando usar</div><ul>';
+      for (var i = 0; i < meta.whenUse.length; i++) html += '<li>' + escHtml(meta.whenUse[i]) + '</li>';
+      html += '</ul></div>';
+    }
+    if (meta.whenNotUse && meta.whenNotUse.length) {
+      html += '<div class="when-box dont"><div class="when-box-title">&#10007; Quando nao usar</div><ul>';
+      for (var j = 0; j < meta.whenNotUse.length; j++) html += '<li>' + escHtml(meta.whenNotUse[j]) + '</li>';
+      html += '</ul></div>';
+    }
+    html += '</div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+
+/**
+ * renderGuidelines(gKey)
+ *
+ * Renderiza o painel de guidelines (Do / Don't) para um grupo semântico.
+ *
+ * @param {string} gKey - Chave do grupo semântico
+ * @expects GROUP_GUIDELINES — constante com arrays `do` e `dont` por grupo
+ * @returns {string} HTML do painel de guidelines, ou string vazia se não houver
+ */
+function renderGuidelines(gKey) {
+  var gl = GROUP_GUIDELINES[gKey];
+  if (!gl) return "";
+  var html = '<div class="guidelines-section"><div class="guidelines-grid">';
+  html += '<div class="guideline-col do"><div class="guideline-col-title">&#10003; Do</div><ul>';
+  for (var i = 0; i < gl.do.length; i++) html += '<li>' + escHtml(gl.do[i]) + '</li>';
+  html += '</ul></div>';
+  html += '<div class="guideline-col dont"><div class="guideline-col-title">&#10007; Don\'t</div><ul>';
+  for (var j = 0; j < gl.dont.length; j++) html += '<li>' + escHtml(gl.dont[j]) + '</li>';
+  html += '</ul></div>';
+  html += '</div></div>';
+  return html;
+}
+
+/**
+ * renderComponentPreview(gKey, tokens, mode)
+ *
+ * Renderiza um preview visual de componente representativo do grupo semântico.
+ * Cada grupo tem um preview diferente: botões (dynamic), tabs/accordion
+ * (interactive), card (static), inputs (inputable), paleta (core), sombras (elevation).
+ *
+ * @param {string} gKey - Chave do grupo semântico
+ * @param {Object[]} tokens - Array de tokens do grupo (não utilizado diretamente)
+ * @param {string} mode - Nome do modo ativo
+ * @returns {string} HTML do preview de componente
+ */
+function renderComponentPreview(gKey, tokens, mode) {
+  var html = '<div class="preview-section"><div class="section-title">Preview de Componente</div><div class="preview-area">';
+  if (gKey === "dynamic") {
+    html += '<button class="prev-btn prev-btn-primary">Primary</button>';
+    html += '<button class="prev-btn prev-btn-secondary">Secondary</button>';
+    html += '<button class="prev-btn prev-btn-ghost">Ghost</button>';
+  } else if (gKey === "interactive") {
+    html += '<div class="prev-tabs"><div class="prev-tab active">Aba 1</div><div class="prev-tab">Aba 2</div><div class="prev-tab">Aba 3</div></div>';
+    html += '<div class="prev-accordion">';
+    html += '<div class="prev-acc-row open"><span>Secao expandida</span><span>&#9650;</span></div>';
+    html += '<div class="prev-acc-body">Conteudo revelado pelo accordion. Tokens interactive controlam a aparencia deste estado.</div>';
+    html += '<div class="prev-acc-row"><span>Secao fechada</span><span>&#9660;</span></div>';
+    html += '<div class="prev-acc-row"><span>Outra secao</span><span>&#9660;</span></div>';
+    html += '</div>';
+  } else if (gKey === "static") {
+    html += '<div class="prev-card">';
+    html += '<div class="prev-card-img">&#128444;</div>';
+    html += '<div class="prev-card-body"><div class="prev-card-title">Card de Conteudo</div><div class="prev-card-text">Elemento estatico sem acao associada. Exibe informacao sem interatividade.</div></div>';
+    html += '</div>';
+  } else if (gKey === "inputable") {
+    html += '<div class="prev-input-wrap">';
+    html += '<div class="prev-input-label">Campo normal</div>';
+    html += '<input class="prev-input" type="text" value="Texto de exemplo" readonly />';
+    html += '<div class="prev-input-label">Campo com erro</div>';
+    html += '<input class="prev-input error" type="text" value="Valor invalido" readonly />';
+    html += '<div class="prev-input-error-msg">&#9888; Este campo e obrigatorio</div>';
+    html += '<div class="prev-checkbox-row"><div class="prev-checkbox">&#10003;</div><span>Aceito os termos</span></div>';
+    html += '</div>';
+  } else if (gKey === "core") {
+    var swatches = ["#1e293b","#334155","#64748b","#94a3b8","#cbd5e1","#e2e8f0","#f1f5f9","#f8fafc"];
+    html += '<div class="prev-palette">';
+    for (var i = 0; i < swatches.length; i++) {
+      html += '<div class="prev-swatch" style="background:' + swatches[i] + '" title="' + swatches[i] + '"></div>';
+    }
+    html += '</div>';
+  } else if (gKey === "elevation") {
+    html += '<div style="display:flex;gap:8px;align-items:flex-end">';
+    html += '<div style="width:60px;height:40px;background:#f5f5f5;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.1)"></div>';
+    html += '<div style="width:60px;height:50px;background:#fff;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12)"></div>';
+    html += '<div style="width:60px;height:60px;background:#fff;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.15)"></div>';
+    html += '<div style="width:60px;height:70px;background:#fff;border-radius:6px;box-shadow:0 16px 40px rgba(0,0,0,.2)"></div>';
+    html += '</div>';
+    html += '<div style="display:flex;gap:8px;margin-top:6px;font-size:9px;color:#a3a3a3">';
+    html += '<span style="width:60px;text-align:center">Level 1</span>';
+    html += '<span style="width:60px;text-align:center">Level 2</span>';
+    html += '<span style="width:60px;text-align:center">Level 3</span>';
+    html += '<span style="width:60px;text-align:center">Level 4</span>';
+    html += '</div>';
+  } else {
+    html += '<span style="color:#9ca3af;font-size:12px">Preview nao disponivel para este grupo</span>';
+  }
+  html += '</div></div>';
+  return html;
+}
+
+/**
+ * renderTokenGrid(tokens, mode)
+ *
+ * Renderiza um grid de cards visuais para tokens de cor.
+ * Cada card mostra: bloco de cor, nome, descrição semântica,
+ * cascateamento de aliases e badges WCAG.
+ *
+ * @param {Object[]} tokens - Array de tokens de cor
+ * @param {string} mode - Nome do modo ativo
+ * @returns {string} HTML do grid de token cards
+ */
+function renderTokenGrid(tokens, mode) {
+  var html = '<div class="token-grid">';
+  for (var i = 0; i < tokens.length; i++) html += renderTokenCard(tokens[i], mode);
+  html += '</div>';
+  return html;
+}
+
+/**
+ * renderTokenCard(token, mode)
+ *
+ * Renderiza um card individual de token de cor com: bloco de cor (ou
+ * indicador de alias), nome curto, descrição semântica, cascateamento
+ * de resolução de aliases e badges de contraste WCAG.
+ *
+ * @param {Object} token - Objeto de token com `name`, `values`, `type`
+ * @param {string} mode - Nome do modo ativo
+ * @returns {string} HTML do card de token
+ */
+function renderTokenCard(token, mode) {
+  var val  = getTokenValue(token, mode);
+  var hex  = getHex(val);
+  var name = token.name || "";
+  var shortName = name.split("/").slice(1).join("/") || name;
+  var desc = getTokenDescription(name);
+
+  // Monta a cadeia de cascateamento
+  var chain = (val && typeof val === "object" && Array.isArray(val.chain)) ? val.chain : [];
+  var finalHex = hex || (val && typeof val === "object" && val.hex ? val.hex : null);
+
+  var html = '<div class="token-card">';
+
+  // Bloco de cor
+  if (finalHex) {
+    html += '<div class="token-color-block" style="background:' + finalHex + '"></div>';
+  } else if (val && typeof val === "object" && val.alias) {
+    html += '<div class="token-color-block" style="background:repeating-linear-gradient(45deg,#f3e8ff,#f3e8ff 5px,#e9d5ff 5px,#e9d5ff 10px);display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#7c3aed;font-style:italic">alias</span></div>';
+  } else {
+    html += '<div class="token-color-block" style="background:#f3f4f6;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#9ca3af">—</span></div>';
+  }
+
+  html += '<div class="token-card-body">';
+
+  // Nome do token (roxo)
+  html += '<div class="token-name" style="color:#6c1bed">' + escHtml(shortName) + '</div>';
+
+  // Descrição semântica
+  html += '<div class="token-desc">' + escHtml(desc) + '</div>';
+
+  // ── Cascateamento ──
+  // Mostra a cadeia completa: alias1 → alias2 → #HEX
+  if (chain.length > 0 || finalHex) {
+    html += '<div style="margin:6px 0 4px;padding:6px 8px;background:#f9fafb;border-radius:6px;border:1px solid #f3f4f6">';
+    html += '<div style="font-size:9px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Cascateamento</div>';
+
+    // Cada nível da cadeia
+    for (var ci = 0; ci < chain.length; ci++) {
+      html += '<div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">';
+      html += '<span style="font-size:9px;color:#9ca3af">' + (ci === 0 ? "→" : "→") + '</span>';
+      html += '<span style="font-size:10px;font-family:monospace;color:#7c3aed;background:#ede9fe;padding:1px 5px;border-radius:3px">' + escHtml(chain[ci]) + '</span>';
+      html += '</div>';
+    }
+
+    // Valor final
+    if (finalHex) {
+      html += '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;padding-top:4px;border-top:1px solid #f3f4f6">';
+      html += '<div style="width:14px;height:14px;border-radius:3px;background:' + finalHex + ';border:1px solid rgba(0,0,0,.1);flex-shrink:0"></div>';
+      html += '<span style="font-size:10px;font-family:monospace;color:#374151;font-weight:600">' + escHtml(finalHex.toUpperCase()) + '</span>';
+      html += '</div>';
+    } else if (val && typeof val === "object" && val.alias) {
+      html += '<div style="font-size:9px;color:#7c3aed;font-style:italic;margin-top:4px">→ ' + escHtml(val.alias) + '</div>';
+    }
+
+    html += '</div>';
+  } else if (val && typeof val === "object" && val.alias) {
+    // Só alias sem cadeia resolvida
+    html += '<div style="margin:6px 0 4px;padding:6px 8px;background:#faf5ff;border-radius:6px;border:1px solid #ede9fe">';
+    html += '<div style="font-size:9px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Alias</div>';
+    html += '<span style="font-size:10px;font-family:monospace;color:#7c3aed">→ ' + escHtml(val.alias) + '</span>';
+    html += '</div>';
+  }
+
+  // Badges de contraste WCAG
+  if (finalHex) {
+    html += '<div class="token-badges">' + contrastBadges(finalHex) + '</div>';
+  }
+
+  html += '</div></div>';
+  return html;
+}
+
+/**
+ * renderTokenTable(tokens, mode)
+ *
+ * Renderiza uma tabela HTML para tokens não-cor (tipografia, espaçamento, etc.).
+ * Agrupa por prefixo e exibe: nome, descrição semântica e valor formatado.
+ *
+ * @param {Object[]} tokens - Array de tokens não-cor
+ * @param {string} mode - Nome do modo ativo
+ * @returns {string} HTML da tabela de tokens
+ */
+function renderTokenTable(tokens, mode) {
+  var groups = groupByPrefix(tokens);
+  var prefixes = Object.keys(groups);
+  var html = "";
+  for (var pi = 0; pi < prefixes.length; pi++) {
+    var prefix = prefixes[pi];
+    var toks = groups[prefix];
+    html += '<div class="prefix-header">' + escHtml(prefix) + '</div>';
+    html += '<div class="token-table-wrap"><table class="token-table">';
+    html += '<thead><tr><th>Token</th><th>Descricao</th><th>Valor</th></tr></thead><tbody>';
+    for (var i = 0; i < toks.length; i++) {
+      var t = toks[i];
+      var val = getTokenValue(t, mode);
+      var tName = t.name || "";
+      var shortName = tName.split("/").slice(1).join("/") || tName;
+      html += '<tr><td class="td-name">' + escHtml(shortName) + '</td>';
+      html += '<td>' + escHtml(getTokenDescription(tName)) + '</td>';
+      html += '<td class="td-val">' + escHtml(formatValue(val)) + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+  }
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 7: RENDERIZAÇÃO DE VALIDAÇÃO STORYBOOK
+// Funções de renderização e comparação da aba "Validar Storybook":
+// exibição de resultados de validação, conversão de nomes Storybook→Figma,
+// geração de variações de nomes para matching e execução da comparação.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * renderValidateView(data)
+ *
+ * Renderiza os resultados da comparação Figma vs Storybook/npm.
+ * Exibe chips de resumo (ok, divergentes, ausentes, novos) e lista
+ * detalhada de cada item com ícone de status, nome e valores comparados.
+ *
+ * @param {Object} data - Objeto com propriedade `items` (array de {name, status, figma, storybook})
+ * @expects data.items[].status — "ok" | "diff" | "miss" | "new"
+ * @inserts innerHTML em #validate-results
+ */
+function renderValidateView(data) {
+  var results = document.getElementById("validate-results");
+  if (!data || !data.items || data.items.length === 0) {
+    results.innerHTML = '<div class="validate-empty"><div class="ve-icon">&#10003;</div>Nenhuma divergencia encontrada</div>';
+    return;
+  }
+  var ok = 0, diff = 0, miss = 0, newCount = 0;
+  for (var i = 0; i < data.items.length; i++) {
+    var s = data.items[i].status;
+    if (s === "ok") ok++; else if (s === "diff") diff++; else if (s === "miss") miss++; else if (s === "new") newCount++;
+  }
+  var html = '<div class="validate-summary">';
+  if (ok)       html += '<span class="summary-chip chip-ok">&#10003; ' + ok + ' ok</span>';
+  if (diff)     html += '<span class="summary-chip chip-diff">&#9651; ' + diff + ' divergentes</span>';
+  if (miss)     html += '<span class="summary-chip chip-miss">&#10007; ' + miss + ' ausentes</span>';
+  if (newCount) html += '<span class="summary-chip chip-new">+ ' + newCount + ' novos</span>';
+  html += '</div><div class="diff-list">';
+  for (var j = 0; j < data.items.length; j++) {
+    var it = data.items[j];
+    var icon = it.status === "ok" ? "&#10003;" : it.status === "diff" ? "&#9651;" : it.status === "new" ? "+" : "&#10007;";
+    html += '<div class="diff-item ' + (it.status || "") + '">';
+    html += '<div class="diff-icon">' + icon + '</div>';
+    html += '<div class="diff-body"><div class="diff-name">' + escHtml(it.name || "") + '</div>';
+    if (it.figma || it.storybook) {
+      html += '<div class="diff-detail">';
+      if (it.figma)     html += 'Figma: <span>' + escHtml(it.figma) + '</span> ';
+      if (it.storybook) html += 'Storybook: <span>' + escHtml(it.storybook) + '</span>';
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  results.innerHTML = html;
+}
+
+/**
+ * normalizeName(name)
+ *
+ * Converte nomenclaturas do Storybook (LfThmBrand, LfBs, LfThm) para
+ * o formato de path do Figma. Remove prefixos conhecidos e converte
+ * camelCase para segmentos separados por "/".
+ *
+ * @param {string} name - Nome do token no formato Storybook
+ * @returns {string} Nome normalizado no formato Figma
+ */
+// Converte nomenclaturas do Storybook (LfThmBrand, LfBs) para o formato do Figma
+// LfThmBrand = brand tokens (Theme Brand)
+// LfBs = base tokens (Base)
+// LfThm = theme tokens
+function normalizeName(name) {
+  if (!name) return "";
+  var s = name;
+  // Remove prefixos conhecidos do Storybook
+  s = s.replace(/^LfThmBrand/i, "Brand/");
+  s = s.replace(/^LfThm/i, "");
+  s = s.replace(/^LfBs/i, "Base/");
+  s = s.replace(/^Lf/i, "");
+  // camelCase → kebab-case → path
+  s = s.replace(/([A-Z])/g, function(m) { return "/" + m.toLowerCase(); });
+  s = s.replace(/^\//, "");
+  // Remove duplas de /
+  s = s.replace(/\/+/g, "/");
+  return s;
+}
+
+/**
+ * sbNameToFigma(name)
+ *
+ * Converte um nome de token do Storybook (camelCase com prefixo LfThm)
+ * para o formato de path do Figma (segmentos separados por "/").
+ * Ex: "LfThmBrandColorPrimary500" → "Brand/Color/Primary/500"
+ *
+ * @param {string} name - Nome do token no formato Storybook
+ * @returns {string} Nome convertido no formato Figma
+ */
+function sbNameToFigma(name) {
+  // Remove prefixo LfThm
+  var s = name.replace(/^LfThm/, "");
+
+  // Insere "/" antes de cada letra maiúscula que não seja a primeira
+  // e antes de sequências de dígitos
+  // Ex: BrandColorPrimary500 → Brand/Color/Primary/500
+  var result = s
+    .replace(/([A-Z][a-z]+)([0-9]+)/g, "$1/$2")   // Primary500 → Primary/500
+    .replace(/([a-z])([A-Z])/g, "$1/$2")            // colorPrimary → color/Primary
+    .replace(/([A-Z][a-z]+)([A-Z])/g, "$1/$2");    // PrimaryColor → Primary/Color
+
+  // Capitaliza primeiro char de cada segmento
+  return result.split("/").map(function(seg) {
+    return seg.charAt(0).toUpperCase() + seg.slice(1);
+  }).join("/");
+}
+
+/**
+ * nameVariations(name)
+ *
+ * Gera todas as variações possíveis de um nome de token para tentar
+ * matching entre Storybook e Figma. Inclui: nome original, conversão
+ * via sbNameToFigma, variações com separadores (-, ., _) e sem prefixos.
+ *
+ * @param {string} name - Nome do token
+ * @returns {string[]} Array de variações de nome (sem duplicatas)
+ */
+function nameVariations(name) {
+  var seen = {};
+  var vars = [];
+
+  function add(v) {
+    if (!v) return;
+    if (!seen[v]) { seen[v] = true; vars.push(v); }
+    var low = v.toLowerCase();
+    if (!seen[low]) { seen[low] = true; vars.push(low); }
+  }
+
+  add(name);
+
+  // Converte LfThm* para path Figma
+  var figmaPath = sbNameToFigma(name);
+  add(figmaPath);
+
+  // Variações do path
+  add(figmaPath.replace(/\//g, "-"));
+  add(figmaPath.replace(/\//g, "."));
+  add(figmaPath.replace(/\//g, "_"));
+
+  // Remove prefixos conhecidos e tenta de novo
+  var stripped = name
+    .replace(/^LfThmBrand/, "Brand/")
+    .replace(/^LfThm/, "")
+    .replace(/^LfBs/, "Base/")
+    .replace(/^Lf/, "");
+  add(stripped);
+
+  // camelCase → path
+  var camelPath = stripped.replace(/([A-Z][0-9]*)/g, function(m) { return "/" + m; }).replace(/^\//, "");
+  add(camelPath);
+
+  return vars;
+}
+
+/**
+ * showNameDebug()
+ *
+ * Exibe um painel de debug com amostras de nomes do Figma e suas
+ * conversões do Storybook, para diagnóstico de problemas de matching.
+ *
+ * @inserts innerHTML em #validate-results
+ */
+function showNameDebug() {
+  var vc = document.getElementById("validate-results");
+  var figmaNames = [];
+  for (var ci = 0; ci < allData.length; ci++) {
+    for (var ti = 0; ti < (allData[ci].tokens || []).length && figmaNames.length < 5; ti++) {
+      figmaNames.push(allData[ci].tokens[ti].name);
+    }
+  }
+  var sbKeys = Object.keys(sbTokens).slice(0, 5);
+  var html = '<div style="background:#fff;border-radius:8px;padding:16px;font-size:11px">';
+  html += '<div style="font-weight:700;color:#1066fa;margin-bottom:8px">Figma (primeiros 5 tokens):</div>';
+  figmaNames.forEach(function(n) { html += '<div style="font-family:monospace;padding:2px 0;color:#374151">' + escHtml(n) + '</div>'; });
+  html += '<div style="font-weight:700;color:#059669;margin:12px 0 8px">Storybook → convertido para Figma:</div>';
+  sbKeys.forEach(function(n) { html += '<div style="font-family:monospace;padding:2px 0;color:#374151">' + escHtml(n) + ' <span style="color:#9ca3af">→</span> ' + escHtml(sbNameToFigma(n)) + '</div>'; });
+  html += '</div>';
+  vc.innerHTML = html;
+}
+
+/**
+ * runComparison()
+ *
+ * Executa a comparação completa entre tokens do Figma e do Storybook.
+ * Indexa tokens do Figma por variações de nome, tenta match para cada
+ * token do Storybook, e classifica como: ok, diff, new ou miss.
+ * Renderiza os resultados via renderValidateView.
+ *
+ * @expects sbTokens — objeto global {sbName: valor} populado via postMessage
+ * @expects allData — array global de CollectionData
+ * @inserts Resultados em #validate-results via renderValidateView
+ */
+function runComparison() {
+  if (!sbTokens || !allData.length) return;
+
+  var items = [];
+  var figmaMap = {};
+
+  // Indexa tokens do Figma por todas as variações de nome
+  for (var ci = 0; ci < allData.length; ci++) {
+    var coll2 = allData[ci];
+    for (var ti = 0; ti < (coll2.tokens || []).length; ti++) {
+      var tok = coll2.tokens[ti];
+      // Nome original
+      figmaMap[tok.name] = tok;
+      figmaMap[tok.name.toLowerCase()] = tok;
+      // Sem espaços
+      var noSpace = tok.name.replace(/ /g, "");
+      figmaMap[noSpace] = tok;
+      figmaMap[noSpace.toLowerCase()] = tok;
+      // Segmentos sem espaço: "Brand/Color/Neutral Alpha/100" → "Brand/Color/NeutralAlpha/100"
+      var segsNoSpace = tok.name.split("/").map(function(seg) { return seg.replace(/ /g, ""); }).join("/");
+      figmaMap[segsNoSpace] = tok;
+      figmaMap[segsNoSpace.toLowerCase()] = tok;
+    }
+  }
+
+  // Debug: mostra primeiros 3 nomes do Figma e do Storybook para diagnóstico
+  var figmaNames = Object.keys(figmaMap).filter(function(k) { return figmaMap[k].name === k; }).slice(0, 3);
+  var sbNames = Object.keys(sbTokens).slice(0, 3);
+  var sbConverted = sbNames.map(function(n) { return n + " → " + sbNameToFigma(n); });
+  console.log("Figma sample:", figmaNames);
+  console.log("SB sample:", sbConverted);
+
+  var sbKeys = Object.keys(sbTokens);
+  var matched = {};
+
+  for (var si = 0; si < sbKeys.length; si++) {
+    var sbKey = sbKeys[si];
+    var sbVal = sbTokens[sbKey];
+
+    // Converte nome do Storybook para path do Figma
+    var figmaPath = sbNameToFigma(sbKey);
+    var figmaTok = null;
+
+    // Tenta match direto e variações
+    var attempts = [
+      figmaPath,
+      figmaPath.toLowerCase(),
+      // Sem espaços nos segmentos: "Neutral Alpha/100" → "NeutralAlpha/100"
+      figmaPath.replace(/ /g, ""),
+      figmaPath.toLowerCase().replace(/ /g, ""),
+      // Com espaços removidos por segmento
+      figmaPath.split("/").map(function(seg) { return seg.replace(/ /g, ""); }).join("/"),
+      figmaPath.toLowerCase().split("/").map(function(seg) { return seg.replace(/ /g, ""); }).join("/")
+    ];
+
+    for (var ai = 0; ai < attempts.length; ai++) {
+      figmaTok = figmaMap[attempts[ai]];
+      if (figmaTok) break;
+    }
+
+    // Se não achou, tenta match parcial pelo último segmento + número
+    if (!figmaTok) {
+      var parts = figmaPath.split("/");
+      var lastTwo = parts.slice(-2).join("/");
+      var lastTwoLow = lastTwo.toLowerCase();
+      var fKeys = Object.keys(figmaMap);
+      for (var fki = 0; fki < fKeys.length; fki++) {
+        var fk = fKeys[fki];
+        if (fk.toLowerCase().indexOf(lastTwoLow) !== -1 && figmaMap[fk].name === fk) {
+          figmaTok = figmaMap[fk];
+          break;
+        }
+      }
+    }
+
+    if (figmaTok) {
+      matched[figmaTok.name] = true;
+      var fVal = formatValue(getTokenValue(figmaTok, activeMode));
+      // Compara só hex — ignora tokens não-cor
+      var sbIsHex = /^#[0-9a-fA-F]{3,8}$/.test(String(sbVal));
+      var fIsHex = /^#[0-9a-fA-F]{3,8}$/.test(fVal);
+      var status;
+      if (!sbIsHex || !fIsHex) {
+        // Não é cor — compara como string
+        status = String(sbVal).toLowerCase() === fVal.toLowerCase() ? "ok" : "diff";
+      } else {
+        status = sbVal.toUpperCase() === fVal.toUpperCase() ? "ok" : "diff";
+      }
+      items.push({ name: figmaTok.name, status: status, figma: fVal, storybook: String(sbVal), sbKey: sbKey });
+    } else {
+      // Só adiciona como "novo" se for token de cor
+      if (/^#[0-9a-fA-F]{3,8}$/.test(String(sbVal))) {
+        items.push({ name: sbKey + " (" + figmaPath + ")", status: "new", storybook: String(sbVal) });
+      }
+    }
+  }
+
+  // Tokens do Figma sem match (só cores)
+  for (var ai2 = 0; ai2 < allData.length; ai2++) {
+    for (var ati = 0; ati < (allData[ai2].tokens || []).length; ati++) {
+      var ft = allData[ai2].tokens[ati];
+      if (!matched[ft.name] && ft.type === "COLOR") {
+        items.push({ name: ft.name, status: "miss", figma: formatValue(getTokenValue(ft, activeMode)) });
+      }
+    }
+  }
+
+  items.sort(function(a, b) {
+    var order = { diff: 0, miss: 1, ok: 2, new: 3 };
+    return (order[a.status] || 99) - (order[b.status] || 99);
+  });
+
+  renderValidateView({ items: items });
+  var diffs = items.filter(function(i) { return i.status === "diff"; }).length;
+  setStatus(diffs + " divergencias encontradas", diffs > 0 ? "busy" : "ok");
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 8: RENDERIZAÇÃO DE DIVERGÊNCIAS
+// Funções de renderização da aba "Divergências": exibição do relatório
+// de comparação Figma vs npm por marca, com seções para valores divergentes,
+// tokens exclusivos do Figma e tokens exclusivos do npm.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * renderDivergenceReport(report)
+ *
+ * Renderiza o relatório completo de divergências entre tokens do Figma e do npm.
+ * Exibe: chips de resumo (iguais, divergentes, só Figma, só npm), lista de
+ * valores divergentes com swatches de cor, e listas de tokens exclusivos
+ * de cada fonte (limitadas a 50 itens com indicador de "e mais N").
+ *
+ * @param {Object} report - Relatório de divergências
+ * @param {number} report.matching - Quantidade de tokens iguais
+ * @param {Object[]} report.valueMismatch - Tokens com valores diferentes
+ * @param {Object[]} report.onlyInFigma - Tokens presentes apenas no Figma
+ * @param {Object[]} report.onlyInNpm - Tokens presentes apenas no npm
+ * @inserts innerHTML em #divergence-results
+ * @inserts Atualiza badge #div-badge com contagem de divergências
+ */
+function renderDivergenceReport(report) {
+  var results = document.getElementById("divergence-results");
+  var html = "";
+
+  // Summary
+  var total = report.matching + report.valueMismatch.length + report.onlyInFigma.length + report.onlyInNpm.length;
+  html += '<div class="validate-summary">';
+  html += '<span class="summary-chip chip-ok">&#10003; ' + report.matching + ' iguais</span>';
+  if (report.valueMismatch.length > 0) html += '<span class="summary-chip chip-diff">&#9888; ' + report.valueMismatch.length + ' divergentes</span>';
+  if (report.onlyInFigma.length > 0) html += '<span class="summary-chip chip-miss">&#128308; ' + report.onlyInFigma.length + ' só no Figma</span>';
+  if (report.onlyInNpm.length > 0) html += '<span class="summary-chip chip-new">&#128309; ' + report.onlyInNpm.length + ' só no npm</span>';
+  html += '</div>';
+
+  // Value mismatches
+  if (report.valueMismatch.length > 0) {
+    html += '<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:8px;margin-top:16px">&#9888; Valores divergentes (' + report.valueMismatch.length + ')</div>';
+    html += '<div class="diff-list">';
+    for (var i = 0; i < report.valueMismatch.length; i++) {
+      var d = report.valueMismatch[i];
+      html += '<div class="diff-item diff">';
+      html += '<span class="diff-icon">&#9888;</span>';
+      html += '<div class="diff-body">';
+      html += '<div class="diff-name">' + escHtml(d.name) + '</div>';
+      html += '<div class="diff-detail">';
+      html += 'Figma: <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:' + d.figmaValue + ';border:1px solid rgba(0,0,0,.1);display:inline-block"></span>' + d.figmaValue + '</span>';
+      html += ' &nbsp;→&nbsp; npm: <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:' + d.npmValue + ';border:1px solid rgba(0,0,0,.1);display:inline-block"></span>' + d.npmValue + '</span>';
+      html += '</div></div></div>';
+    }
+    html += '</div>';
+  }
+
+  // Only in Figma
+  if (report.onlyInFigma.length > 0) {
+    html += '<div style="font-size:11px;font-weight:700;color:#991b1b;margin-bottom:8px;margin-top:16px">&#128308; Só no Figma (' + report.onlyInFigma.length + ')</div>';
+    html += '<div class="diff-list">';
+    var showFigma = report.onlyInFigma.slice(0, 50);
+    for (var fi = 0; fi < showFigma.length; fi++) {
+      var f = showFigma[fi];
+      html += '<div class="diff-item miss"><span class="diff-icon">&#128308;</span><div class="diff-body">';
+      html += '<div class="diff-name">' + escHtml(f.name) + '</div>';
+      html += '<div class="diff-detail">' + (f.figmaValue || "") + '</div>';
+      html += '</div></div>';
+    }
+    if (report.onlyInFigma.length > 50) html += '<div style="text-align:center;color:#9ca3af;font-size:11px;padding:8px">... e mais ' + (report.onlyInFigma.length - 50) + '</div>';
+    html += '</div>';
+  }
+
+  // Only in npm
+  if (report.onlyInNpm.length > 0) {
+    html += '<div style="font-size:11px;font-weight:700;color:#0369a1;margin-bottom:8px;margin-top:16px">&#128309; Só no npm (' + report.onlyInNpm.length + ')</div>';
+    html += '<div class="diff-list">';
+    var showNpm = report.onlyInNpm.slice(0, 50);
+    for (var ni = 0; ni < showNpm.length; ni++) {
+      var n = showNpm[ni];
+      html += '<div class="diff-item new"><span class="diff-icon">&#128309;</span><div class="diff-body">';
+      html += '<div class="diff-name">' + escHtml(n.name) + '</div>';
+      html += '<div class="diff-detail">' + (n.npmValue || "") + '</div>';
+      html += '</div></div>';
+    }
+    if (report.onlyInNpm.length > 50) html += '<div style="text-align:center;color:#9ca3af;font-size:11px;padding:8px">... e mais ' + (report.onlyInNpm.length - 50) + '</div>';
+    html += '</div>';
+  }
+
+  if (total === 0) {
+    html = '<div class="validate-empty"><div class="ve-icon">&#128269;</div>Nenhum token encontrado para comparar.</div>';
+  }
+
+  results.innerHTML = html;
+
+  // Update badge
+  var badge = document.getElementById("div-badge");
+  var divCount = report.valueMismatch.length;
+  if (divCount > 0) {
+    badge.textContent = divCount;
+    badge.style.display = "inline";
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 6: RENDERIZAÇÃO DE AUDITORIA
+// Funções de renderização da aba "Auditoria": painel de sugestões por
+// seleção de nó, resultados de auditoria com severidade (error, warning,
+// suggestion), ações de correção individual e em lote, e seleção de nós.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * renderSuggestionPanel(results)
+ *
+ * Renderiza o painel de sugestões de tokens para o nó selecionado no canvas.
+ * Exibe: nome e tipo do nó, tags de composição semântica detectada,
+ * e lista de sugestões de tokens por propriedade (fill, stroke, text-color)
+ * com botão "Aplicar" para cada sugestão.
+ *
+ * @param {Object[]} results - Array de resultados de análise de seleção
+ * @param {string} results[].nodeName - Nome do nó selecionado
+ * @param {string} results[].nodeType - Tipo do nó (ex: "FRAME", "TEXT")
+ * @param {Object} results[].composition - Composição semântica detectada
+ * @param {Object[]} results[].properties - Propriedades com sugestões de tokens
+ * @inserts innerHTML em #suggestion-panel
+ */
+function renderSuggestionPanel(results) {
+  var panel = document.getElementById("suggestion-panel");
+  if (!panel) return;
+  if (!results || results.length === 0) { panel.style.display = "none"; return; }
+
+  panel.style.display = "block";
+  var html = "";
+
+  results.forEach(function(result) {
+    // Header: nome + tipo do nó
+    html += '<div class="suggestion-header">';
+    html += '<span style="font-size:14px">&#128270;</span>';
+    html += '<span class="suggestion-node-name">' + escHtml(result.nodeName) + '</span>';
+    html += '<span class="suggestion-node-type">' + escHtml(result.nodeType) + '</span>';
+    html += '</div>';
+
+    // Tags de composição detectada
+    var comp = result.composition;
+    if (comp) {
+      html += '<div class="suggestion-composition">';
+      if (comp.semanticGroup) html += '<span class="comp-tag group">&#9670; ' + escHtml(comp.semanticGroup) + '</span>';
+      if (comp.layer)         html += '<span class="comp-tag">&#9632; ' + escHtml(comp.layer) + '</span>';
+      if (comp.role && comp.role !== "neutral") html += '<span class="comp-tag">&#9679; ' + escHtml(comp.role) + '</span>';
+      if (comp.state && comp.state !== "default") html += '<span class="comp-tag state">&#9650; ' + escHtml(comp.state) + '</span>';
+      if (comp.feedback) html += '<span class="comp-tag feedback-' + escHtml(comp.feedback) + '">&#9888; ' + escHtml(comp.feedback) + '</span>';
+      if (comp.parentContext) html += '<span class="comp-tag" style="background:#f3f4f6;color:#6b7280">em: ' + escHtml(comp.parentContext) + '</span>';
+      html += '</div>';
+    }
+
+    // Propriedades com sugestões
+    html += '<div class="suggestion-props">';
+    result.properties.forEach(function(prop) {
+      if (!prop.suggestions || prop.suggestions.length === 0) return;
+
+      var propLabel = { fill: "Fill / Background", stroke: "Stroke / Border", "text-color": "Cor do Texto" }[prop.type] || prop.type;
+      html += '<div class="suggestion-prop">';
+      html += '<div class="suggestion-prop-title">';
+      html += escHtml(propLabel);
+      if (prop.hasToken) {
+        html += '<span class="suggestion-has-token">&#10003; ' + escHtml(prop.currentToken || "") + '</span>';
+      } else {
+        html += '<span class="suggestion-no-token">&#9888; Sem token vinculado</span>';
+      }
+      html += '</div>';
+
+      // Token atual
+      if (prop.currentValue || prop.currentToken) {
+        html += '<div class="suggestion-current">';
+        html += '<span class="suggestion-current-label">Atual:</span>';
+        if (prop.currentValue) html += '<div class="suggestion-current-swatch" style="background:' + escHtml(prop.currentValue) + '"></div>';
+        html += '<span class="suggestion-current-token">' + escHtml(prop.currentToken || prop.currentValue || "—") + '</span>';
+        html += '</div>';
+      }
+
+      // Lista de sugestões
+      html += '<div class="suggestion-list">';
+      prop.suggestions.forEach(function(sug, idx) {
+        var isTop = idx === 0;
+        html += '<div class="suggestion-item' + (isTop ? " top" : "") + '" title="' + escHtml(sug.reason) + '">';
+        html += '<span class="suggestion-rank' + (isTop ? " top" : "") + '">' + (isTop ? "★" : (idx + 1)) + '</span>';
+        html += '<span class="suggestion-token-name">' + escHtml(sug.tokenName) + '</span>';
+        html += '<span class="suggestion-reason">' + escHtml(sug.reason) + '</span>';
+        html += '<button class="suggestion-apply" onclick="applyTokenSuggestion(\'' + escAttr(result.nodeId) + '\',\'' + escAttr(sug.tokenId) + '\',\'' + escAttr(sug.tokenName) + '\',\'' + escAttr(prop.type) + '\',' + prop.index + ')">Aplicar</button>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  panel.innerHTML = html;
+}
+
+/**
+ * applyTokenSuggestion(nodeId, tokenId, tokenName, propType, propIndex)
+ *
+ * Envia mensagem ao sandbox para aplicar uma sugestão de token a um nó.
+ *
+ * @param {string} nodeId - ID do nó Figma
+ * @param {string} tokenId - ID do token
+ * @param {string} tokenName - Nome do token para exibição
+ * @param {string} propType - Tipo da propriedade ("fill", "stroke", "text-color")
+ * @param {number} propIndex - Índice da propriedade (para fills múltiplos)
+ */
+function applyTokenSuggestion(nodeId, tokenId, tokenName, propType, propIndex) {
+  parent.postMessage({ pluginMessage: {
+    type: "apply-token-suggestion",
+    nodeId: nodeId,
+    tokenId: tokenId,
+    tokenName: tokenName,
+    propType: propType,
+    propIndex: propIndex || 0
+  }}, "*");
+}
+
+/**
+ * auditIssues — Array global que armazena os issues encontrados pela última auditoria.
+ * Usado para ações de correção individual (fixSingle) e em lote (fixAll).
+ * @type {Object[]}
+ */
+var auditIssues = [];
+
+document.getElementById("btn-audit-page").addEventListener("click", function() {
+  startAudit("page");
+});
+document.getElementById("btn-audit-selection").addEventListener("click", function() {
+  startAudit("selection");
+});
+
+/**
+ * startAudit(scope)
+ *
+ * Inicia uma auditoria de tokens enviando mensagem ao sandbox.
+ * Exibe spinner de progresso e limpa issues anteriores.
+ *
+ * @param {string} scope - Escopo da auditoria: "page" (página inteira) ou "selection" (seleção)
+ * @inserts Spinner em #audit-results
+ */
+function startAudit(scope) {
+  auditIssues = [];
+  var results = document.getElementById("audit-results");
+  results.innerHTML = '<div class="audit-progress"><div class="spinner"></div><div style="margin-top:8px">Iniciando auditoria...</div></div>';
+  setStatus("Auditando...", "busy");
+  parent.postMessage({ pluginMessage: { type: "run-audit", scope: scope } }, "*");
+}
+
+/**
+ * renderAuditResults(summary, issues)
+ *
+ * Renderiza os resultados completos da auditoria de tokens.
+ * Exibe: chips de resumo (erros, avisos, sugestões), botão "Corrigir todos"
+ * para issues fixáveis, e lista detalhada agrupada por severidade.
+ * Cada issue mostra: severidade, nome do nó, propriedade, tokens atual→recomendado,
+ * razão, texto educacional e botões de ação.
+ *
+ * @param {Object} summary - Resumo com {errors, warnings, suggestions, total, scanned}
+ * @param {Object[]} issues - Array de issues encontrados
+ * @param {string} issues[].severity - "error" | "warning" | "suggestion"
+ * @param {string} issues[].nodeName - Nome do nó com problema
+ * @param {string} issues[].property - Propriedade afetada
+ * @param {string} issues[].current - Token atual (se houver)
+ * @param {string} issues[].recommended - Token recomendado
+ * @param {boolean} issues[].fixable - Se o issue pode ser corrigido automaticamente
+ * @inserts innerHTML em #audit-results
+ */
+function renderAuditResults(summary, issues) {
+  auditIssues = issues;
+  var results = document.getElementById("audit-results");
+  var html = "";
+
+  // Summary chips
+  html += '<div class="audit-summary">';
+  if (summary.errors > 0)      html += '<span class="audit-chip chip-error">&#10007; ' + summary.errors + ' erros</span>';
+  if (summary.warnings > 0)    html += '<span class="audit-chip chip-warning">&#9651; ' + summary.warnings + ' avisos</span>';
+  if (summary.suggestions > 0) html += '<span class="audit-chip chip-suggestion">&#128161; ' + summary.suggestions + ' sugestões</span>';
+  if (summary.total === 0)     html += '<span class="audit-chip chip-ok">&#10003; Nenhum problema encontrado</span>';
+  html += '<span style="font-size:10px;color:#9ca3af;margin-left:auto">' + summary.scanned + ' nós escaneados</span>';
+  html += '</div>';
+
+  // Fix all button
+  var fixable = issues.filter(function(i) { return i.fixable; }).length;
+  if (fixable > 0) {
+    html += '<div class="audit-fix-all">';
+    html += '<span style="font-size:11px;color:#065f46;flex:1">' + fixable + ' problema(s) podem ser corrigidos automaticamente</span>';
+    html += '<button class="btn-fix" onclick="fixAll()">&#9889; Corrigir todos</button>';
+    html += '</div>';
+  }
+
+  if (issues.length === 0) {
+    html += '<div class="validate-empty"><div class="ve-icon">&#10003;</div>Nenhum problema encontrado!</div>';
+    results.innerHTML = html;
+    return;
+  }
+
+  // Agrupa por severidade
+  var order = ["error","warning","suggestion"];
+  order.forEach(function(sev) {
+    var sevIssues = issues.filter(function(i) { return i.severity === sev; });
+    if (sevIssues.length === 0) return;
+
+    var sevLabel = { error: "Erros", warning: "Avisos", suggestion: "Sugestões" }[sev];
+    html += '<div style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.6px;margin:12px 0 6px">' + sevLabel + ' (' + sevIssues.length + ')</div>';
+
+    sevIssues.forEach(function(issue, idx) {
+      var globalIdx = issues.indexOf(issue);
+      html += '<div class="audit-issue ' + sev + '">';
+
+      // Header: severidade + nome do nó + propriedade
+      html += '<div class="audit-issue-header">';
+      html += '<span class="audit-severity sev-' + sev + '">' + sev + '</span>';
+      html += '<span class="audit-node" title="' + escHtml(issue.nodeName) + '">' + escHtml(issue.nodeName) + '</span>';
+      html += '<span class="audit-property">' + escHtml(issue.property) + '</span>';
+      html += '</div>';
+
+      // Tokens: atual → recomendado
+      html += '<div class="audit-tokens">';
+      if (issue.current) {
+        html += '<div class="audit-token-box audit-token-current">';
+        if (issue.currentValue) html += '<div class="audit-swatch" style="background:' + escHtml(issue.currentValue) + '"></div>';
+        html += escHtml(issue.current) + '</div>';
+      } else if (issue.currentValue) {
+        html += '<div class="audit-token-box audit-token-current">';
+        html += '<div class="audit-swatch" style="background:' + escHtml(issue.currentValue) + '"></div>';
+        html += escHtml(issue.currentValue) + ' (sem token)</div>';
+      }
+      if (issue.recommended) {
+        html += '<span class="audit-arrow">&#8594;</span>';
+        html += '<div class="audit-token-box audit-token-recommended">' + escHtml(issue.recommended) + '</div>';
+      }
+      html += '</div>';
+
+      // Razão
+      html += '<div class="audit-reason">' + escHtml(issue.reason) + '</div>';
+
+      // Modo educacional
+      if (issue.educational) {
+        html += '<div class="audit-educational">&#128218; ' + escHtml(issue.educational) + '</div>';
+      }
+
+      // Ações
+      html += '<div class="audit-actions">';
+      if (issue.fixable && issue.recommended) {
+        html += '<button class="btn-fix" onclick="fixSingle(' + globalIdx + ')">&#9889; Aplicar fix</button>';
+      }
+      html += '<button class="btn-select" onclick="selectNode(\'' + escAttr(issue.nodeId) + '\')">&#128269; Selecionar nó</button>';
+      html += '</div>';
+
+      html += '</div>';
+    });
+  });
+
+  results.innerHTML = html;
+
+  // Atualiza badge
+  var badge = document.getElementById("audit-badge");
+  badge.textContent = summary.errors + summary.warnings;
+  badge.style.display = (summary.errors + summary.warnings) > 0 ? "inline-block" : "none";
+}
+
+/**
+ * fixSingle(issueIdx)
+ *
+ * Envia mensagem ao sandbox para corrigir um issue individual de auditoria.
+ *
+ * @param {number} issueIdx - Índice do issue no array global auditIssues
+ */
+function fixSingle(issueIdx) {
+  var issue = auditIssues[issueIdx];
+  if (!issue || !issue.fixable) return;
+  parent.postMessage({ pluginMessage: { type: "fix-issue", nodeId: issue.nodeId, recommended: issue.recommended } }, "*");
+}
+
+/**
+ * fixAll()
+ *
+ * Envia mensagem ao sandbox para corrigir todos os issues fixáveis de uma vez.
+ * Filtra apenas issues com `fixable: true` e `recommended` definido.
+ */
+function fixAll() {
+  var fixable = auditIssues.filter(function(i) { return i.fixable && i.recommended; });
+  parent.postMessage({ pluginMessage: { type: "fix-all", issues: fixable } }, "*");
+}
+
+/**
+ * selectNode(nodeId)
+ *
+ * Envia mensagem ao sandbox para selecionar e focar um nó no canvas do Figma.
+ *
+ * @param {string} nodeId - ID do nó Figma a selecionar
+ */
+function selectNode(nodeId) {
+  parent.postMessage({ pluginMessage: { type: "select-node", nodeId: nodeId } }, "*");
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 9: HANDLERS DE TOPBAR
+// Event listeners dos botões da topbar e painéis de ação: exportação (JSON, MD),
+// geração/atualização de boards, refresh, seleção de collections (Todas/Nenhuma),
+// validação Storybook (fetch, carregar arquivo, colar JSON), divergências
+// (sync docs, carregar JSON, verificar, watch toggle) e inputs de arquivo.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// — Exportação —
+document.getElementById("btn-copy").addEventListener("click", function() {
+  parent.postMessage({ pluginMessage: { type: "get-json" } }, "*");
+});
+document.getElementById("btn-export-md").addEventListener("click", function() {
+  parent.postMessage({ pluginMessage: { type: "export-markdown" } }, "*");
+});
+
+// — Canvas (Gerar / Atualizar) —
+document.getElementById("btn-docs").addEventListener("click", function() {
+  var ids = getSelectedIds();
+  if (ids.length === 0) {
+    setStatus("Nenhuma collection selecionada", "err");
+    return;
+  }
+  var names = [];
+  for (var i = 0; i < allData.length; i++) {
+    if (ids.indexOf(allData[i].id) !== -1) {
+      names.push(allData[i].name);
+    }
+  }
+  setStatus("Gerando: " + names.join(", "), "busy");
+  document.getElementById("btn-docs").disabled = true;
+  document.getElementById("btn-update").disabled = true;
+  parent.postMessage({ pluginMessage: { type: "generate-docs", selectedIds: ids } }, "*");
+});
+document.getElementById("btn-update").addEventListener("click", function() {
+  var ids = getSelectedIds();
+  if (ids.length === 0) {
+    setStatus("Nenhuma collection selecionada", "err");
+    return;
+  }
+  var names = [];
+  for (var i = 0; i < allData.length; i++) {
+    if (ids.indexOf(allData[i].id) !== -1) {
+      names.push(allData[i].name);
+    }
+  }
+  setStatus("Atualizando: " + names.join(", "), "busy");
+  document.getElementById("btn-docs").disabled = true;
+  document.getElementById("btn-update").disabled = true;
+  parent.postMessage({ pluginMessage: { type: "update-docs", selectedIds: ids } }, "*");
+});
+
+// — Controle (Refresh) —
+document.getElementById("btn-refresh").addEventListener("click", function() {
+  setStatus("Recarregando…", "busy");
+  parent.postMessage({ pluginMessage: { type: "get-data" } }, "*");
+});
+
+// — Seleção de Collections (Todas / Nenhuma) —
+document.getElementById("btn-all").addEventListener("click", function() {
+  selectAllCollections();
+});
+document.getElementById("btn-none").addEventListener("click", function() {
+  deselectAllCollections();
+});
+
+// — Validação Storybook —
+document.getElementById("btn-sb-fetch").addEventListener("click", function() {
+  var results = document.getElementById("validate-results");
+  results.innerHTML = '<div class="validate-empty"><div class="spinner"></div><div style="margin-top:8px">Buscando tokens do Storybook…</div></div>';
+  parent.postMessage({ pluginMessage: { type: "fetch-storybook" } }, "*");
+});
+
+document.getElementById("btn-load-file").addEventListener("click", function() {
+  document.getElementById("file-input").click();
+});
+
+document.getElementById("file-input").addEventListener("change", function(e) {
+  var file = e.target.files && e.target.files[0];
+  if (!file) return;
+  var results = document.getElementById("validate-results");
+  results.innerHTML = '<div class="validate-empty"><div class="spinner"></div><div style="margin-top:8px">Lendo ' + escHtml(file.name) + '...</div></div>';
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var content = ev.target.result;
+      var parsed = JSON.parse(content);
+      // Normaliza: aceita {tokenName: "#hex"} ou {tokenName: {value: "#hex"}} ou {tokenName: {light: "#hex"}}
+      var tokens = {};
+      var keys = Object.keys(parsed);
+      for (var ki = 0; ki < keys.length; ki++) {
+        var k = keys[ki];
+        var v = parsed[k];
+        if (typeof v === "string" && /^#[0-9a-fA-F]{3,8}$/.test(v)) {
+          tokens[k] = v.toUpperCase();
+        } else if (typeof v === "object" && v !== null) {
+          if (v.value && typeof v.value === "string") tokens[k] = v.value.toUpperCase();
+          else if (v.light && typeof v.light === "string") tokens[k] = v.light.toUpperCase();
+          else if (v.default && typeof v.default === "string") tokens[k] = v.default.toUpperCase();
+        }
+      }
+      var count = Object.keys(tokens).length;
+      setStatus(count + " tokens carregados de " + file.name, "ok");
+      // Dispara comparação diretamente
+      parent.postMessage({ pluginMessage: { type: "paste-tokens-json", content: JSON.stringify(tokens) } }, "*");
+    } catch(err) {
+      results.innerHTML = '<div style="color:#dc2626;padding:16px;font-size:11px">Erro ao ler JSON: ' + escHtml(String(err)) + '</div>';
+    }
+    // Reset input para permitir recarregar o mesmo arquivo
+    e.target.value = "";
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById("btn-paste-json").addEventListener("click", function() {
+  var pa = document.getElementById("paste-area");
+  pa.style.display = pa.style.display === "none" ? "block" : "none";
+});
+
+document.getElementById("btn-cancel-paste").addEventListener("click", function() {
+  document.getElementById("paste-area").style.display = "none";
+  document.getElementById("json-paste-input").value = "";
+});
+
+document.getElementById("btn-parse-json").addEventListener("click", function() {
+  var content = document.getElementById("json-paste-input").value.trim();
+  if (!content) return;
+  document.getElementById("paste-area").style.display = "none";
+  var results = document.getElementById("validate-results");
+  results.innerHTML = '<div class="validate-empty"><div class="spinner"></div><div style="margin-top:8px">Processando JSON...</div></div>';
+  parent.postMessage({ pluginMessage: { type: "paste-tokens-json", content: content } }, "*");
+});
+
+// — Divergências —
+var watchEnabled = false;
+
+document.getElementById("btn-sync-docs").addEventListener("click", function() {
+  var results = document.getElementById("divergence-results");
+  results.innerHTML = '<div class="validate-empty"><div class="spinner"></div><div style="margin-top:8px">Carregando documentação enriquecida...</div></div>';
+  setStatus("Sincronizando docs...", "busy");
+  parent.postMessage({ pluginMessage: { type: "sync-docs-to-boards" } }, "*");
+});
+
+document.getElementById("btn-sync-file").addEventListener("click", function() {
+  document.getElementById("div-file-enriched").click();
+});
+
+document.getElementById("div-file-enriched").addEventListener("change", function(e) {
+  var file = e.target.files && e.target.files[0];
+  if (!file) return;
+  var results = document.getElementById("divergence-results");
+  results.innerHTML = '<div class="validate-empty"><div class="spinner"></div><div style="margin-top:8px">Lendo ' + escHtml(file.name) + '...</div></div>';
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      parent.postMessage({ pluginMessage: { type: "fetch-response", requestId: "sync-docs", data: data, error: null } }, "*");
+    } catch(err) {
+      results.innerHTML = '<div style="color:#dc2626;padding:16px;font-size:11px">Erro ao ler JSON: ' + escHtml(String(err)) + '</div>';
+    }
+    e.target.value = "";
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById("btn-check-div").addEventListener("click", function() {
+  var results = document.getElementById("divergence-results");
+  results.innerHTML = '<div class="validate-empty"><div class="spinner"></div><div style="margin-top:8px">Comparando tokens Figma vs npm...</div></div>';
+  setStatus("Verificando divergências...", "busy");
+  parent.postMessage({ pluginMessage: { type: "check-divergences" } }, "*");
+});
+
+document.getElementById("btn-div-file").addEventListener("click", function() {
+  document.getElementById("div-file-npm").click();
+});
+
+document.getElementById("div-file-npm").addEventListener("change", function(e) {
+  var file = e.target.files && e.target.files[0];
+  if (!file) return;
+  var results = document.getElementById("divergence-results");
+  results.innerHTML = '<div class="validate-empty"><div class="spinner"></div><div style="margin-top:8px">Lendo ' + escHtml(file.name) + '...</div></div>';
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      parent.postMessage({ pluginMessage: { type: "fetch-response", requestId: "check-div", data: data, error: null } }, "*");
+    } catch(err) {
+      results.innerHTML = '<div style="color:#dc2626;padding:16px;font-size:11px">Erro ao ler JSON: ' + escHtml(String(err)) + '</div>';
+    }
+    e.target.value = "";
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById("btn-watch-toggle").addEventListener("click", function() {
+  watchEnabled = !watchEnabled;
+  var btn = document.getElementById("btn-watch-toggle");
+  if (watchEnabled) {
+    btn.textContent = "👁 Monitoramento em Tempo Real: Ativado";
+    btn.className = "btn btn-watch-active";
+    btn.title = "Desativar monitoramento contínuo de mudanças em tokens do Figma";
+    setStatus("Monitorando mudanças de tokens...", "ok");
+  } else {
+    btn.textContent = "👁 Monitoramento em Tempo Real: Desativado";
+    btn.className = "btn";
+    btn.title = "Ativar monitoramento contínuo de mudanças em tokens do Figma";
+    setStatus("Monitoramento desativado", "");
+    document.getElementById("div-notifications").style.display = "none";
+  }
+  parent.postMessage({ pluginMessage: { type: "watch-tokens", enabled: watchEnabled } }, "*");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEÇÃO 10: HANDLERS DE MENSAGEM (ONMESSAGE)
+// Handler principal de mensagens recebidas do sandbox (code.js) via postMessage.
+// Processa respostas de dados, status de operações, resultados de auditoria,
+// validação Storybook, divergências, watch e fetch delegado.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Mensagens recebidas (code.js → ui.html) ──────────────────────────────
+// | msg.type            | Payload                              | Descrição                                  |
+// |---------------------|--------------------------------------|--------------------------------------------|
+// | result              | { data: CollectionData[] }           | Dados de tokens exportados                 |
+// | docs-done           | {}                                   | Geração/atualização de boards concluída    |
+// | docs-progress       | { current, total, collectionName }   | Progresso da geração                       |
+// | error               | { message: string }                  | Erro genérico                              |
+// | registry-built      | { count: number }                    | Token registry construído                  |
+// | storybook-result    | { ok, diff, missing, extra }         | Resultado da validação Storybook           |
+// | storybook-error     | { message: string }                  | Erro ao buscar Storybook                   |
+// | divergence-report   | { data: DivergenceReport }           | Relatório de divergências                  |
+// | token-changed       | { data: TokenChangeInfo }            | Token alterado (watch)                     |
+// | watch-status        | { enabled: boolean }                 | Status do watch                            |
+// | auto-updating       | { count: number }                    | Auto-update em andamento                   |
+// | auto-updated        | { patched: number }                  | Auto-update concluído                      |
+// | sync-docs-status    | { status, count }                    | Status do sync de docs                     |
+// | sync-docs-done      | { count: number }                    | Sync de docs concluído                     |
+// | fetch-url           | { requestId, url }                   | Pede para UI fazer fetch                   |
+//
+// ── Mensagens enviadas (ui.html → code.js) ───────────────────────────────
+// | msg.type                | Payload                              | Descrição                                  |
+// |-------------------------|--------------------------------------|--------------------------------------------|
+// | get-data / refresh      | {}                                   | Solicita dados de tokens                   |
+// | generate-docs           | { selectedIds: string[] }            | Gerar boards para collections selecionadas |
+// | update-docs             | { selectedIds: string[] }            | Atualizar boards existentes                |
+// | get-json                | {}                                   | Exportar JSON                              |
+// | export-markdown         | {}                                   | Exportar Markdown                          |
+// | build-registry          | { data, activeMode }                 | Construir token registry                   |
+// | run-enhanced-audit      | {}                                   | Executar auditoria                         |
+// | fix-issue               | { nodeId, tokenId, propType }        | Corrigir issue individual                  |
+// | fix-all                 | { issues }                           | Corrigir todos os issues                   |
+// | select-node             | { nodeId }                           | Selecionar nó no canvas                    |
+// | apply-token-suggestion  | { nodeId, tokenId, propType }        | Aplicar sugestão de token                  |
+// | fetch-storybook         | {}                                   | Buscar tokens do Storybook                 |
+// | paste-tokens-json       | { content: string }                  | Processar JSON colado                      |
+// | check-divergences       | { npmTokensJson }                    | Verificar divergências                     |
+// | watch-tokens            | { enabled: boolean }                 | Ativar/desativar watch                     |
+// | fetch-response          | { requestId, data, error }           | Resposta de fetch da UI                    |
+// | close                   | {}                                   | Fechar plugin                              |
+
+window.onmessage = function(event) {
+  var msg = event.data.pluginMessage;
+  if (!msg) return;
+
+  if (msg.type === "selection-cleared") {
+    var sp = document.getElementById("suggestion-panel");
+    if (sp) { sp.style.display = "none"; sp.innerHTML = ""; }
+    return;
+  }
+  if (msg.type === "selection-analysis") {
+    renderSuggestionPanel(msg.results || []);
+    return;
+  }
+  if (msg.type === "token-applied") {
+    setStatus("Token aplicado: " + msg.tokenName, "ok");
+    setTimeout(function() { setStatus(allData.length + " collections carregadas", "ok"); }, 2000);
+    return;
+  }
+  if (msg.type === "audit-progress") {
+    var ar = document.getElementById("audit-results");
+    ar.innerHTML = '<div class="audit-progress"><div class="spinner"></div><div style="margin-top:8px">' + escHtml(msg.message) + '</div></div>';
+    return;
+  }
+  if (msg.type === "audit-result") {
+    renderAuditResults(msg.summary, msg.issues || []);
+    var errCount = msg.summary.errors + msg.summary.warnings;
+    setStatus("Auditoria: " + errCount + " problema(s)", errCount > 0 ? "busy" : "ok");
+    return;
+  }
+  if (msg.type === "fix-done") {
+    // Remove o issue corrigido da lista e re-renderiza
+    auditIssues = auditIssues.filter(function(i) { return i.nodeId !== msg.nodeId; });
+    var errors2 = auditIssues.filter(function(i) { return i.severity === "error"; }).length;
+    var warnings2 = auditIssues.filter(function(i) { return i.severity === "warning"; }).length;
+    renderAuditResults({ errors: errors2, warnings: warnings2, suggestions: 0, total: auditIssues.length, scanned: 0 }, auditIssues);
+    setStatus("Fix aplicado: " + msg.applied, "ok");
+    return;
+  }
+  if (msg.type === "fix-all-done") {
+    setStatus(msg.fixed + " fixes aplicados ✓", "ok");
+    startAudit("page"); // re-audita
+    return;
+  }
+  if (msg.type === "fix-error") {
+    setStatus("Erro no fix: " + msg.message, "err");
+    return;
+  }
+  if (msg.type === "result") {
+    allData = msg.data || [];
+    setStatus(allData.length + " collections carregadas", "ok");
+    if (allData.length > 0 && !activeCollId) activeCollId = allData[0].id;
+    renderLeftNav();
+    if (activeCollId) {
+      var coll = null;
+      for (var i = 0; i < allData.length; i++) {
+        if (allData[i].id === activeCollId) { coll = allData[i]; break; }
+      }
+      if (coll) {
+        activeMode = firstModeName(coll);
+        renderModeBar(coll);
+        renderGroupView(coll, activeMode);
+      }
+    }
+  }
+  else if (msg.type === "docs-done") {
+    setStatus("Documentacao gerada com sucesso", "ok");
+    document.getElementById("btn-docs").disabled = false;
+    document.getElementById("btn-update").disabled = false;
+  }
+  else if (msg.type === "update-done") {
+    setStatus("Tokens atualizados", "ok");
+    document.getElementById("btn-docs").disabled = false;
+    document.getElementById("btn-update").disabled = false;
+  }
+  else if (msg.type === "auto-updating") {
+    setStatus("Atualizando automaticamente…", "busy");
+  }
+  else if (msg.type === "auto-updated") {
+    setStatus("Atualizado automaticamente", "ok");
+  }
+  else if (msg.type === "json-ready") {
+    // Copia JSON para clipboard
+    var ta = document.createElement("textarea");
+    ta.value = msg.content || "{}";
+    ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try {
+      document.execCommand("copy");
+      setStatus("JSON copiado ✓", "ok");
+      setTimeout(function() { setStatus(allData.length + " collections", "ok"); }, 2000);
+    } catch(_) { setStatus("Erro ao copiar JSON", "err"); }
+    document.body.removeChild(ta);
+    return;
+  }
+  else if (msg.type === "markdown-ready") {
+    // Download do markdown principal (tokens + guidelines + instruções IA)
+    var blob = new Blob([msg.content || ""], { type: "text/markdown" });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement("a");
+    a.href = url; a.download = "tokens-docs.md"; a.click();
+    URL.revokeObjectURL(url);
+    setStatus("Markdown exportado ✓", "ok");
+    setTimeout(function() { setStatus(allData.length + " collections carregadas", "ok"); }, 3000);
+  }
+  else if (msg.type === "storybook-tokens") {
+    sbTokens = msg.tokens || {};
+    var sbKeys = Object.keys(sbTokens);
+
+    // ── DEBUG: mostra amostras dos dois lados para diagnóstico ──
+    var figmaSample = [];
+    for (var di = 0; di < allData.length && figmaSample.length < 5; di++) {
+      var dc = allData[di];
+      for (var dti = 0; dti < (dc.tokens || []).length && figmaSample.length < 5; dti++) {
+        figmaSample.push(dc.tokens[dti].name);
+      }
+    }
+    var sbSample = sbKeys.slice(0, 10);
+
+    var results2 = document.getElementById("validate-results");
+    results2.innerHTML =
+      '<div style="background:#fff;border-radius:8px;padding:16px;margin-bottom:12px;border:1px solid #e5e5e5">' +
+      '<div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:8px">Debug — Amostras de nomes</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
+      '<div><div style="font-size:10px;font-weight:700;color:#1066fa;margin-bottom:4px">Figma (primeiros 5)</div>' +
+      figmaSample.map(function(n) { return '<div style="font-size:10px;font-family:monospace;color:#374151;padding:2px 0">' + escHtml(n) + '</div>'; }).join("") +
+      '</div>' +
+      '<div><div style="font-size:10px;font-weight:700;color:#059669;margin-bottom:4px">Storybook (primeiros 10)</div>' +
+      sbSample.map(function(n) { return '<div style="font-size:10px;font-family:monospace;color:#374151;padding:2px 0">' + escHtml(n) + '</div>'; }).join("") +
+      '</div></div>' +
+      '<div style="margin-top:10px;font-size:10px;color:#9ca3af">Total Storybook: ' + sbKeys.length + ' tokens | Total Figma: ' + figmaSample.length + '+ tokens</div>' +
+      '<div style="margin-top:8px"><button onclick="runComparison()" style="padding:6px 12px;background:#1066fa;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">Confirmar e comparar</button>' +
+      '<button onclick="showNameDebug()" style="padding:6px 12px;background:#f3f4f6;color:#374151;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-left:6px">Ver nomes</button></div>' +
+      '</div>';
+
+    setStatus(sbKeys.length + " tokens do Storybook carregados", "ok");
+  }
+  else if (msg.type === "storybook-error") {
+    var res2 = document.getElementById("validate-results");
+    res2.innerHTML = '<div class="validate-empty"><div class="ve-icon">&#9888;</div>' + escHtml(msg.error || "Erro ao buscar Storybook") + '</div>';
+    setStatus("Erro ao buscar Storybook", "err");
+  }
+  else if (msg.type === "storybook-debug") {
+    var vc2 = document.getElementById("validate-results");
+    if (vc2) {
+      var line2 = document.createElement("div");
+      line2.style.cssText = "font-size:10px;color:#6b7280;padding:2px 16px;font-family:monospace";
+      line2.textContent = "→ " + (msg.msg || msg.data || "");
+      vc2.appendChild(line2);
+      vc2.scrollTop = vc2.scrollHeight;
+    }
+  }
+  else if (msg.type === "divergence-report") {
+    renderDivergenceReport(msg.data);
+    var divTotal = msg.data.valueMismatch.length;
+    setStatus("Divergências: " + divTotal + " diferença(s) encontrada(s)", divTotal > 0 ? "busy" : "ok");
+  }
+  else if (msg.type === "sync-docs-status") {
+    setStatus("Docs carregados: " + msg.count + " tokens enriquecidos", "ok");
+  }
+  else if (msg.type === "sync-docs-done") {
+    var dr = document.getElementById("divergence-results");
+    dr.innerHTML = '<div class="validate-empty"><div class="ve-icon">&#10003;</div>Documentação enriquecida carregada com sucesso.<br>' + msg.count + ' tokens com contexto, aliases, roles e CSS.<br><span style="color:#059669;font-weight:600">Os boards serão gerados com dados enriquecidos.</span></div>';
+    setStatus("Docs sincronizados ✓", "ok");
+  }
+  else if (msg.type === "watch-status") {
+    var wBtn = document.getElementById("btn-watch-toggle");
+    if (msg.enabled) {
+      wBtn.textContent = "👁 Monitoramento em Tempo Real: Ativado";
+      wBtn.className = "btn btn-watch-active";
+      wBtn.title = "Desativar monitoramento contínuo de mudanças em tokens do Figma";
+    } else {
+      wBtn.textContent = "👁 Monitoramento em Tempo Real: Desativado";
+      wBtn.className = "btn";
+      wBtn.title = "Ativar monitoramento contínuo de mudanças em tokens do Figma";
+    }
+  }
+  else if (msg.type === "token-changed") {
+    var d = msg.data;
+    var notifArea = document.getElementById("div-notifications");
+    var notifList = document.getElementById("div-notif-list");
+    notifArea.style.display = "block";
+    var divClass = d.isDivergent ? "color:#dc2626;font-weight:600" : "color:#059669";
+    var line = '<div style="padding:2px 0;' + divClass + '">';
+    line += (d.isDivergent ? "&#9888; " : "&#10003; ") + escHtml(d.name);
+    line += ': ' + (d.oldValue || "?") + ' → ' + (d.newValue || "?");
+    if (d.isDivergent && d.npmValue) line += ' (npm: ' + d.npmValue + ')';
+    line += '</div>';
+    notifList.innerHTML = line + notifList.innerHTML;
+    // Keep only last 20 notifications
+    var items = notifList.children;
+    while (items.length > 20) notifList.removeChild(items[items.length - 1]);
+    // Update badge
+    if (d.isDivergent) {
+      var badge = document.getElementById("div-badge");
+      var current = parseInt(badge.textContent || "0");
+      badge.textContent = current + 1;
+      badge.style.display = "inline";
+    }
+  }
+  else if (msg.type === "fetch-url") {
+    // A UI faz o fetch em nome do code.js (sandbox não tem acesso web direto)
+    var reqId = msg.requestId;
+    var fetchUrl = msg.url;
+    fetch(fetchUrl, { mode: "cors" }).then(function(r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    }).then(function(text) {
+      var data;
+      try { data = JSON.parse(text); } catch(pe) {
+        parent.postMessage({ pluginMessage: { type: "fetch-response", requestId: reqId, data: null, error: "JSON parse error" } }, "*");
+        return;
+      }
+      parent.postMessage({ pluginMessage: { type: "fetch-response", requestId: reqId, data: data, error: null } }, "*");
+    }).catch(function(err) {
+      parent.postMessage({ pluginMessage: { type: "fetch-response", requestId: reqId, data: null, error: (err.message || String(err)) + " — Tente carregar o arquivo manualmente." } }, "*");
+    });
+  }
+  else if (msg.type === "error") {
+    setStatus(msg.message || "Erro desconhecido", "err");
+    document.getElementById("btn-docs").disabled = false;
+    document.getElementById("btn-update").disabled = false;
+  }
+};
+
+// ── Init: solicita dados ao carregar ──
+parent.postMessage({ pluginMessage: { type: "get-data" } }, "*");
+</script>
+</body>
+</html>

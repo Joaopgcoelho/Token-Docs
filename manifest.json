@@ -1,0 +1,26 @@
+{
+  "name": "Token Docs",
+  "id": "token-exporter",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://lift.yduqs.com.br",
+      "https://api.allorigins.win",
+      "https://api.codetabs.com",
+      "https://thingproxy.freeboard.io",
+      "https://corsproxy.io",
+      "https://cors-anywhere.herokuapp.com",
+      "https://proxy.cors.sh",
+      "http://localhost:3000",
+      "http://localhost:3001"
+    ],
+    "reasoning": "Fetches Storybook bundle and documentation site to compare design tokens with Figma variables and generate documentation boards.",
+    "devAllowedDomains": [
+      "http://localhost:3000",
+      "http://localhost:3001"
+    ]
+  }
+}

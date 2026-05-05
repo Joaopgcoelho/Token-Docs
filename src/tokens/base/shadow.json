@@ -1,0 +1,28 @@
+{
+  "Base": {
+    "Elevation": {
+      "Shadow": {
+        "Level1": {
+          "Layer1": { "$type": "shadow", "$value": "0px 2px 4px rgba(68, 68, 68, 0.1)" },
+          "Layer2": { "$type": "shadow", "$value": "0px 4px 8px rgba(68, 68, 68, 0.05)" },
+          "Layer3": { "$type": "shadow", "$value": "0px 8px 16px rgba(68, 68, 68, 0.05)" }
+        },
+        "Level2": {
+          "Layer1": { "$type": "shadow", "$value": "0px 4px 8px rgba(68, 68, 68, 0.1)" },
+          "Layer2": { "$type": "shadow", "$value": "0px 8px 16px rgba(68, 68, 68, 0.1)" },
+          "Layer3": { "$type": "shadow", "$value": "0px 16px 32px rgba(68, 68, 68, 0.05)" }
+        },
+        "Level3": {
+          "Layer1": { "$type": "shadow", "$value": "0px 8px 16px rgba(68, 68, 68, 0.1)" },
+          "Layer2": { "$type": "shadow", "$value": "0px 16px 32px rgba(68, 68, 68, 0.1)" },
+          "Layer3": { "$type": "shadow", "$value": "0px 32px 64px rgba(68, 68, 68, 0.05)" }
+        },
+        "Level4": {
+          "Layer1": { "$type": "shadow", "$value": "0px 0px 16px rgba(68, 68, 68, 0.1)" },
+          "Layer2": { "$type": "shadow", "$value": "0px 0px 32px rgba(68, 68, 68, 0.1)" },
+          "Layer3": { "$type": "shadow", "$value": "0px 0px 64px rgba(68, 68, 68, 0.05)" }
+        }
+      }
+    }
+  }
+}

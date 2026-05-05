@@ -1,0 +1,15 @@
+{
+  "Base": {
+    "Opacity": {
+      "0": { "$type": "number", "$value": 0 },
+      "4": { "$type": "number", "$value": 0.04 },
+      "8": { "$type": "number", "$value": 0.08 },
+      "16": { "$type": "number", "$value": 0.16 },
+      "24": { "$type": "number", "$value": 0.24 },
+      "48": { "$type": "number", "$value": 0.48 },
+      "64": { "$type": "number", "$value": 0.64 },
+      "80": { "$type": "number", "$value": 0.80 },
+      "100": { "$type": "number", "$value": 1 }
+    }
+  }
+}
