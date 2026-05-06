@@ -9,7 +9,7 @@ export default defineConfig({
   base: './',
   build: {
     outDir: '../docs',
-    emptyOutDir: true,
+    emptyOutDir: false,
   },
   resolve: {
     alias: {

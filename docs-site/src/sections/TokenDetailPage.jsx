@@ -11,7 +11,9 @@ import { generateGuidelines } from '../shared/guidelinesEngine';
 
 // Section components
 import BreadcrumbNavigator from './token-detail/BreadcrumbNavigator';
-import HeaderSection from './token-detail/HeaderSection';
+import HeroSection from './token-detail/HeroSection';
+import QuickUsage from './token-detail/QuickUsage';
+import Collapsible from './token-detail/Collapsible';
 import MetadataPanel from './token-detail/MetadataPanel';
 import ValueSection from './token-detail/ValueSection';
 import VisualPreview from './token-detail/VisualPreview';
@@ -25,11 +27,9 @@ import TechnicalDetails from './token-detail/TechnicalDetails';
 import RelatedReferences from './token-detail/RelatedReferences';
 
 export default function TokenDetailPage({ tokenName, brand, mode, onNavigate, onBrandChange, onModeChange }) {
-  // 2.4 — Memoize enriched lookup
   const enriched = useMemo(() => getEnrichedToken(tokenName), [tokenName]);
   const resolvedValue = getResolvedValue(tokenName, brand, mode);
 
-  // Recommended surface (only for onSurface/text/icon tokens)
   const recommendedSurface = useMemo(() => {
     if (!enriched) return undefined;
     const surface = getRecommendedSurface(enriched);
@@ -43,7 +43,6 @@ export default function TokenDetailPage({ tokenName, brand, mode, onNavigate, on
     };
   }, [enriched, brand, mode]);
 
-  // 2.4 — Memoize contrast info properly
   const contrastInfo = useMemo(() => {
     if (!enriched || !enriched.isColor || !resolvedValue || !recommendedSurface || !recommendedSurface.isColor || !recommendedSurface.value) {
       return null;
@@ -54,22 +53,19 @@ export default function TokenDetailPage({ tokenName, brand, mode, onNavigate, on
     return { ratio, level, foreground: resolvedValue, background: recommendedSurface.value };
   }, [enriched?.isColor, resolvedValue, recommendedSurface?.isColor, recommendedSurface?.value]);
 
-  // Guidelines
   const guidelines = useMemo(() => {
     return generateGuidelines(enriched);
   }, [enriched]);
 
-  // 2.4 — Use enriched?.name as dependency instead of whole object
   const enrichedName = enriched?.name;
   const relatedTokens = useMemo(() => {
     if (!enriched) return [];
     return getRelatedTokens(enriched);
   }, [enrichedName]);
 
-  // Generated at timestamp
   const generatedAt = enrichedData.generatedAt;
 
-  // Error state: token not found
+  // Error state
   if (!enriched) {
     return (
       <div className="td-page">
@@ -88,63 +84,86 @@ export default function TokenDetailPage({ tokenName, brand, mode, onNavigate, on
         ← Voltar ao Token Browser
       </button>
 
-      {/* Breadcrumb: only if segments exist */}
+      {/* Breadcrumb */}
       {enriched.segments && enriched.segments.length > 0 && (
         <BreadcrumbNavigator segments={enriched.segments} onNavigate={onNavigate} />
       )}
 
-      {/* Header: always show */}
-      <HeaderSection enriched={enriched} resolvedValue={resolvedValue} contrastInfo={contrastInfo} />
-
-      {/* Metadata: always show */}
-      <MetadataPanel enriched={enriched} />
-
-      {/* Value: always show */}
-      <ValueSection
-        tokenName={tokenName}
-        brand={brand}
-        mode={mode}
-        onBrandChange={onBrandChange}
-        onModeChange={onModeChange}
+      {/* ═══ LAYER 1: HERO (always visible) ═══ */}
+      <HeroSection
         enriched={enriched}
+        resolvedValue={resolvedValue}
+        contrastInfo={contrastInfo}
+        brand={brand}
       />
 
-      {/* Preview: always show */}
-      <VisualPreview enriched={enriched} resolvedValue={resolvedValue} />
+      {/* ═══ LAYER 2: QUICK USAGE ═══ */}
+      <QuickUsage enriched={enriched} recommendedSurface={recommendedSurface} />
 
-      {/* Usage Examples: always show */}
-      <UsageExamples enriched={enriched} resolvedValue={resolvedValue} brand={brand} mode={mode} />
+      {/* ═══ LAYER 3: PROGRESSIVE DISCLOSURE ═══ */}
 
-      {/* Guidelines: only if guidelines array has items */}
-      {guidelines && guidelines.length > 0 && (
-        <GuidelinesPanel guidelines={guidelines} />
-      )}
+      <Collapsible title="Metadados" defaultOpen={false}>
+        <MetadataPanel enriched={enriched} />
+      </Collapsible>
 
-      {/* Context: only if there's context data or recommended surface */}
-      {(enriched.context || recommendedSurface) && (
-        <ContextSection
+      <Collapsible title="Valores detalhados" defaultOpen={false}>
+        <ValueSection
+          tokenName={tokenName}
+          brand={brand}
+          mode={mode}
+          onBrandChange={onBrandChange}
+          onModeChange={onModeChange}
           enriched={enriched}
-          recommendedSurface={recommendedSurface}
-          contrastRatio={contrastInfo ? contrastInfo.ratio : undefined}
         />
+      </Collapsible>
+
+      <Collapsible title="Preview completo" defaultOpen={false}>
+        <VisualPreview enriched={enriched} resolvedValue={resolvedValue} />
+      </Collapsible>
+
+      <Collapsible title="Exemplos de uso" defaultOpen={true}>
+        <UsageExamples enriched={enriched} resolvedValue={resolvedValue} brand={brand} mode={mode} />
+      </Collapsible>
+
+      {guidelines && guidelines.length > 0 && (
+        <Collapsible title="Diretrizes" defaultOpen={false}>
+          <GuidelinesPanel guidelines={guidelines} />
+        </Collapsible>
       )}
 
-      {/* Decision Engine: always show (derives from segments) */}
-      <DecisionEngineSection enriched={enriched} />
+      {(enriched.context || recommendedSurface) && (
+        <Collapsible title="Contexto de uso" defaultOpen={false}>
+          <ContextSection
+            enriched={enriched}
+            recommendedSurface={recommendedSurface}
+            contrastRatio={contrastInfo ? contrastInfo.ratio : undefined}
+          />
+        </Collapsible>
+      )}
 
-      {/* Token Mapping: only if aliasChain exists and has items */}
+      <Collapsible title="Decision Engine" defaultOpen={false}>
+        <DecisionEngineSection enriched={enriched} />
+      </Collapsible>
+
       {enriched.aliasChain && enriched.aliasChain.length > 0 && (
-        <TokenMappingSection enriched={enriched} brand={brand} mode={mode} />
+        <Collapsible title="Mapeamento de tokens" defaultOpen={false}>
+          <TokenMappingSection enriched={enriched} brand={brand} mode={mode} />
+        </Collapsible>
       )}
 
-      {/* Code: always show */}
-      <CodeSection enriched={enriched} brand={brand} resolvedValue={resolvedValue} />
+      <Collapsible title="Código" defaultOpen={false}>
+        <CodeSection enriched={enriched} brand={brand} resolvedValue={resolvedValue} />
+      </Collapsible>
 
-      {/* Technical: always show */}
-      <TechnicalDetails enriched={enriched} generatedAt={generatedAt} />
+      <Collapsible title="Detalhes técnicos" defaultOpen={false}>
+        <TechnicalDetails enriched={enriched} generatedAt={generatedAt} />
+      </Collapsible>
 
-      {/* Related: already conditional (returns null if empty) */}
-      <RelatedReferences relatedTokens={relatedTokens} onNavigate={onNavigate} />
+      {relatedTokens && relatedTokens.length > 0 && (
+        <Collapsible title="Tokens relacionados" defaultOpen={false}>
+          <RelatedReferences relatedTokens={relatedTokens} onNavigate={onNavigate} />
+        </Collapsible>
+      )}
     </div>
   );
 }
