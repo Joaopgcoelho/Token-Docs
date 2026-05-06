@@ -15,13 +15,16 @@ export default function TechnicalDetailsCollapse({ children }) {
         }}
       >
         <span style={{ fontSize: 14, fontWeight: 600, color: '#171717' }}>
-          Detalhes técnicos
+          Ver detalhes técnicos
+          <span style={{ fontSize: 12, fontWeight: 400, color: '#a3a3a3', marginLeft: '8px' }}>
+            código, tokens base, metadados
+          </span>
         </span>
         <span style={{
           fontSize: 12, color: '#076AEA', fontWeight: 500,
           display: 'flex', alignItems: 'center', gap: '4px',
         }}>
-          {open ? 'Ocultar' : 'Ver detalhes'}
+          {open ? 'Ocultar' : 'Expandir'}
           <span style={{
             transition: 'transform 200ms ease',
             transform: open ? 'rotate(180deg)' : 'rotate(0deg)',

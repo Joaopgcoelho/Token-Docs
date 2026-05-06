@@ -38,7 +38,7 @@ export default function TokenResultHeader({ enriched, resolvedValue, contrastInf
               background: contrastInfo.level === 'Fail' ? '#FBE5E5' : contrastInfo.level === 'AAA' ? '#E5F8DF' : '#FFF8E0',
               color: contrastInfo.level === 'Fail' ? '#C42A27' : contrastInfo.level === 'AAA' ? '#176600' : '#92400e',
             }}>
-              WCAG {contrastInfo.level}
+              Acessível: {contrastInfo.level} ({contrastInfo.ratio.toFixed(1)}:1)
             </span>
           )}
         </div>
@@ -48,10 +48,10 @@ export default function TokenResultHeader({ enriched, resolvedValue, contrastInf
         <code style={{ fontSize: 12, color: '#525252' }}>{resolvedValue || '—'}</code>
       </div>
 
-      {/* Quick copy */}
+      {/* Quick copy — action-oriented labels */}
       <div style={{ flexShrink: 0, display: 'flex', gap: '6px' }}>
-        <CopyButton text={cssVar} label="CSS" />
-        <CopyButton text={enriched.path || enriched.name} label="Figma" />
+        <CopyButton text={cssVar} label="Copiar CSS" />
+        <CopyButton text={enriched.path || enriched.name} label="Copiar Figma" />
       </div>
     </div>
   );
