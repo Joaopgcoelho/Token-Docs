@@ -9,22 +9,21 @@ import {
 import { contrastRatio, wcagLevel } from '../shared/colorUtils';
 import { generateGuidelines } from '../shared/guidelinesEngine';
 
-// Section components
+// Decision-first components
 import BreadcrumbNavigator from './token-detail/BreadcrumbNavigator';
-import HeroSection from './token-detail/HeroSection';
-import QuickUsage from './token-detail/QuickUsage';
-import Collapsible from './token-detail/Collapsible';
+import DecisionHeroSection from './token-detail/DecisionHeroSection';
+import TokenResultHeader from './token-detail/TokenResultHeader';
+import UsageBlock from './token-detail/UsageBlock';
+import ContextBlock from './token-detail/ContextBlock';
+import TechnicalDetailsCollapse from './token-detail/TechnicalDetailsCollapse';
+import RelatedReferences from './token-detail/RelatedReferences';
+
+// Technical sections (inside collapse)
 import MetadataPanel from './token-detail/MetadataPanel';
 import ValueSection from './token-detail/ValueSection';
-import VisualPreview from './token-detail/VisualPreview';
-import GuidelinesPanel from './token-detail/GuidelinesPanel';
-import DecisionEngineSection from './token-detail/DecisionEngineSection';
-import UsageExamples from './token-detail/UsageExamples';
-import ContextSection from './token-detail/ContextSection';
-import CodeSection from './token-detail/CodeSection';
 import TokenMappingSection from './token-detail/TokenMappingSection';
+import CodeSection from './token-detail/CodeSection';
 import TechnicalDetails from './token-detail/TechnicalDetails';
-import RelatedReferences from './token-detail/RelatedReferences';
 
 export default function TokenDetailPage({ tokenName, brand, mode, onNavigate, onBrandChange, onModeChange }) {
   const enriched = useMemo(() => getEnrichedToken(tokenName), [tokenName]);
@@ -89,24 +88,37 @@ export default function TokenDetailPage({ tokenName, brand, mode, onNavigate, on
         <BreadcrumbNavigator segments={enriched.segments} onNavigate={onNavigate} />
       )}
 
-      {/* ═══ LAYER 1: HERO (always visible) ═══ */}
-      <HeroSection
+      {/* ═══ 1. DECISION HERO — "Qual token usar?" ═══ */}
+      <DecisionHeroSection token={enriched} />
+
+      {/* ═══ 2. TOKEN RESULT — compact header ═══ */}
+      <TokenResultHeader
         enriched={enriched}
         resolvedValue={resolvedValue}
         contrastInfo={contrastInfo}
         brand={brand}
       />
 
-      {/* ═══ LAYER 2: QUICK USAGE ═══ */}
-      <QuickUsage enriched={enriched} recommendedSurface={recommendedSurface} />
+      {/* ═══ 3. USAGE — "Como usar?" ═══ */}
+      <UsageBlock
+        enriched={enriched}
+        resolvedValue={resolvedValue}
+        brand={brand}
+        mode={mode}
+        guidelines={guidelines}
+      />
 
-      {/* ═══ LAYER 3: PROGRESSIVE DISCLOSURE ═══ */}
+      {/* ═══ 4. CONTEXT — surface, contrast, fallback ═══ */}
+      <ContextBlock
+        enriched={enriched}
+        recommendedSurface={recommendedSurface}
+        contrastInfo={contrastInfo}
+      />
 
-      <Collapsible title="Metadados" defaultOpen={false}>
+      {/* ═══ 5. TECHNICAL — progressive disclosure ═══ */}
+      <TechnicalDetailsCollapse>
         <MetadataPanel enriched={enriched} />
-      </Collapsible>
 
-      <Collapsible title="Valores detalhados" defaultOpen={false}>
         <ValueSection
           tokenName={tokenName}
           brand={brand}
@@ -115,55 +127,18 @@ export default function TokenDetailPage({ tokenName, brand, mode, onNavigate, on
           onModeChange={onModeChange}
           enriched={enriched}
         />
-      </Collapsible>
 
-      <Collapsible title="Preview completo" defaultOpen={false}>
-        <VisualPreview enriched={enriched} resolvedValue={resolvedValue} />
-      </Collapsible>
-
-      <Collapsible title="Exemplos de uso" defaultOpen={true}>
-        <UsageExamples enriched={enriched} resolvedValue={resolvedValue} brand={brand} mode={mode} />
-      </Collapsible>
-
-      {guidelines && guidelines.length > 0 && (
-        <Collapsible title="Diretrizes" defaultOpen={false}>
-          <GuidelinesPanel guidelines={guidelines} />
-        </Collapsible>
-      )}
-
-      {(enriched.context || recommendedSurface) && (
-        <Collapsible title="Contexto de uso" defaultOpen={false}>
-          <ContextSection
-            enriched={enriched}
-            recommendedSurface={recommendedSurface}
-            contrastRatio={contrastInfo ? contrastInfo.ratio : undefined}
-          />
-        </Collapsible>
-      )}
-
-      <Collapsible title="Decision Engine" defaultOpen={false}>
-        <DecisionEngineSection enriched={enriched} />
-      </Collapsible>
-
-      {enriched.aliasChain && enriched.aliasChain.length > 0 && (
-        <Collapsible title="Mapeamento de tokens" defaultOpen={false}>
+        {enriched.aliasChain && enriched.aliasChain.length > 0 && (
           <TokenMappingSection enriched={enriched} brand={brand} mode={mode} />
-        </Collapsible>
-      )}
+        )}
 
-      <Collapsible title="Código" defaultOpen={false}>
         <CodeSection enriched={enriched} brand={brand} resolvedValue={resolvedValue} />
-      </Collapsible>
 
-      <Collapsible title="Detalhes técnicos" defaultOpen={false}>
         <TechnicalDetails enriched={enriched} generatedAt={generatedAt} />
-      </Collapsible>
+      </TechnicalDetailsCollapse>
 
-      {relatedTokens && relatedTokens.length > 0 && (
-        <Collapsible title="Tokens relacionados" defaultOpen={false}>
-          <RelatedReferences relatedTokens={relatedTokens} onNavigate={onNavigate} />
-        </Collapsible>
-      )}
+      {/* ═══ 6. RELATED ═══ */}
+      <RelatedReferences relatedTokens={relatedTokens} onNavigate={onNavigate} />
     </div>
   );
 }
