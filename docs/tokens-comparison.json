@@ -1,0 +1,458 @@
+{
+  "_description": "Comparison between npm tokens and known Figma token structure",
+  "generatedAt": "2026-05-05T14:01:29.070Z",
+  "figmaUsageGroups": {
+    "Core": {
+      "figmaSubPaths": [
+        "OnSurface/Text/Primary",
+        "OnSurface/Text/Secondary",
+        "OnSurface/Text/Tertiary",
+        "OnSurface/Text/Brand",
+        "OnSurface/Text/Critical",
+        "OnSurface/Text/Warning",
+        "OnSurface/Text/Success",
+        "OnSurface/Text/Info",
+        "OnSurface/Text/Code",
+        "OnSurface/Text/Inverse/Primary",
+        "OnSurface/Text/Inverse/Secondary",
+        "OnSurface/Text/Inverse/Tertiary",
+        "OnSurface/Text/Inverse/Brand",
+        "OnSurface/Text/Inverse/Critical",
+        "OnSurface/Text/Inverse/Warning",
+        "OnSurface/Text/Inverse/Success",
+        "OnSurface/Text/Inverse/Info",
+        "OnSurface/Text/Inverse/Code",
+        "OnSurface/Border/Primary",
+        "OnSurface/Border/Secondary",
+        "OnSurface/Border/Tertiary",
+        "OnSurface/Border/Brand",
+        "OnSurface/Border/Critical",
+        "OnSurface/Border/Warning",
+        "OnSurface/Border/Success",
+        "OnSurface/Border/Info",
+        "OnSurface/Border/Divider",
+        "OnSurface/Border/Focus",
+        "OnSurface/Border/Inverse/Primary",
+        "OnSurface/Border/Inverse/Secondary",
+        "OnSurface/Border/Inverse/Tertiary",
+        "OnSurface/Border/Inverse/Brand",
+        "OnSurface/Border/Inverse/Critical",
+        "OnSurface/Border/Inverse/Warning",
+        "OnSurface/Border/Inverse/Success",
+        "OnSurface/Border/Inverse/Info",
+        "OnSurface/Border/Inverse/Divider",
+        "OnSurface/Border/Inverse/Focus",
+        "OnSurface/Link/Default",
+        "OnSurface/Link/Hover",
+        "OnSurface/Link/Active",
+        "OnSurface/Link/Visited",
+        "OnSurface/Link/Inverse/Default",
+        "OnSurface/Link/Inverse/Hover",
+        "OnSurface/Link/Inverse/Active",
+        "OnSurface/Link/Inverse/Visited",
+        "OnSurface/Icon/Primary",
+        "OnSurface/Icon/Secondary",
+        "OnSurface/Icon/Tertiary",
+        "OnSurface/Icon/Brand",
+        "OnSurface/Icon/Critical",
+        "OnSurface/Icon/Warning",
+        "OnSurface/Icon/Success",
+        "OnSurface/Icon/Info",
+        "OnSurface/Icon/Inverse/Primary",
+        "OnSurface/Icon/Inverse/Secondary",
+        "OnSurface/Icon/Inverse/Tertiary",
+        "OnSurface/Icon/Inverse/Brand",
+        "OnSurface/Icon/Inverse/Critical",
+        "OnSurface/Icon/Inverse/Warning",
+        "OnSurface/Icon/Inverse/Success",
+        "OnSurface/Icon/Inverse/Info",
+        "OnSurface/Skeleton/Default",
+        "OnSurface/Skeleton/Inverse/Default",
+        "Surface/Default",
+        "Surface/Inverse"
+      ],
+      "npmTokenCount": 66,
+      "coverage": "present",
+      "sampleTokens": [
+        {
+          "name": "LfThmCoreOnSurfaceTextPrimary",
+          "path": "Core / OnSurface / Text / Primary",
+          "value": "#171717"
+        },
+        {
+          "name": "LfThmCoreOnSurfaceTextSecondary",
+          "path": "Core / OnSurface / Text / Secondary",
+          "value": "#373737"
+        },
+        {
+          "name": "LfThmCoreOnSurfaceTextTertiary",
+          "path": "Core / OnSurface / Text / Tertiary",
+          "value": "#525252"
+        },
+        {
+          "name": "LfThmCoreOnSurfaceTextBrand",
+          "path": "Core / OnSurface / Text / Brand",
+          "value": "#076aea"
+        },
+        {
+          "name": "LfThmCoreOnSurfaceTextCritical",
+          "path": "Core / OnSurface / Text / Critical",
+          "value": "#e0302d"
+        }
+      ]
+    },
+    "Dynamic": {
+      "figmaSubPaths": [
+        "Primary",
+        "Secondary",
+        "Critical",
+        "Highlight",
+        "Ghost",
+        "Simple",
+        "Disabled",
+        "Unframed"
+      ],
+      "npmTokenCount": 176,
+      "coverage": "present",
+      "sampleTokens": [
+        {
+          "name": "LfThmDynamicCriticalSurfaceDefault",
+          "path": "Dynamic / Critical / Surface / Default",
+          "value": "#c42a27"
+        },
+        {
+          "name": "LfThmDynamicCriticalSurfaceHover",
+          "path": "Dynamic / Critical / Surface / Hover",
+          "value": "#9b211f"
+        },
+        {
+          "name": "LfThmDynamicCriticalSurfacePressed",
+          "path": "Dynamic / Critical / Surface / Pressed",
+          "value": "#701817"
+        },
+        {
+          "name": "LfThmDynamicCriticalSurfaceLoading",
+          "path": "Dynamic / Critical / Surface / Loading",
+          "value": "#c42a27"
+        },
+        {
+          "name": "LfThmDynamicCriticalSurfaceInverseDefault",
+          "path": "Dynamic / Critical / Surface / Inverse / Default",
+          "value": "#ffffff"
+        }
+      ]
+    },
+    "Interactive": {
+      "figmaSubPaths": [
+        "Primary",
+        "Secondary",
+        "Tertiary",
+        "Neutral",
+        "Critical",
+        "Success",
+        "Warning",
+        "Info",
+        "Highlight"
+      ],
+      "npmTokenCount": 220,
+      "coverage": "present",
+      "sampleTokens": [
+        {
+          "name": "LfThmInteractiveCriticalSurfaceLowDefault",
+          "path": "Interactive / Critical / Surface / Low / Default",
+          "value": "#701817"
+        },
+        {
+          "name": "LfThmInteractiveCriticalSurfaceLowHover",
+          "path": "Interactive / Critical / Surface / Low / Hover",
+          "value": "#460f0e"
+        },
+        {
+          "name": "LfThmInteractiveCriticalSurfaceLowActive",
+          "path": "Interactive / Critical / Surface / Low / Active",
+          "value": "#460f0e"
+        },
+        {
+          "name": "LfThmInteractiveCriticalSurfacePureDefault",
+          "path": "Interactive / Critical / Surface / Pure / Default",
+          "value": "#fbe5e5"
+        },
+        {
+          "name": "LfThmInteractiveCriticalSurfacePureHover",
+          "path": "Interactive / Critical / Surface / Pure / Hover",
+          "value": "#f5bebd"
+        }
+      ]
+    },
+    "Static": {
+      "figmaSubPaths": [
+        "Primary",
+        "Secondary",
+        "Tertiary",
+        "Neutral",
+        "Critical",
+        "Success",
+        "Warning",
+        "Info",
+        "Highlight",
+        "Ai",
+        "Alpha"
+      ],
+      "npmTokenCount": 251,
+      "coverage": "present",
+      "sampleTokens": [
+        {
+          "name": "LfThmStaticAiSurfaceHighest",
+          "path": "Static / Ai / Surface / Highest",
+          "value": "#f3f8e3"
+        },
+        {
+          "name": "LfThmStaticAiSurfaceHigher",
+          "path": "Static / Ai / Surface / Higher",
+          "value": "#e0edba"
+        },
+        {
+          "name": "LfThmStaticAiSurfaceHigh",
+          "path": "Static / Ai / Surface / High",
+          "value": "#cee291"
+        },
+        {
+          "name": "LfThmStaticAiSurfaceLow",
+          "path": "Static / Ai / Surface / Low",
+          "value": "#bbd767"
+        },
+        {
+          "name": "LfThmStaticAiSurfaceLower",
+          "path": "Static / Ai / Surface / Lower",
+          "value": "#9dc523"
+        }
+      ]
+    },
+    "Inputable": {
+      "figmaSubPaths": [
+        "Field/Neutral",
+        "Field/Critical",
+        "Field/Success",
+        "Field/Disabled",
+        "Selectable/Neutral",
+        "Selectable/Critical",
+        "Selectable/Disabled"
+      ],
+      "npmTokenCount": 108,
+      "coverage": "present",
+      "sampleTokens": [
+        {
+          "name": "LfThmInputableFieldNeutralSurfaceDefault",
+          "path": "Inputable / Field / Neutral / Surface / Default",
+          "value": "#ffffff"
+        },
+        {
+          "name": "LfThmInputableFieldNeutralSurfaceHover",
+          "path": "Inputable / Field / Neutral / Surface / Hover",
+          "value": "#ffffff"
+        },
+        {
+          "name": "LfThmInputableFieldNeutralSurfaceActive",
+          "path": "Inputable / Field / Neutral / Surface / Active",
+          "value": "#ffffff"
+        },
+        {
+          "name": "LfThmInputableFieldNeutralSurfaceInverseDefault",
+          "path": "Inputable / Field / Neutral / Surface / Inverse / Default",
+          "value": "rgba(166, 166, 166, 0.15)"
+        },
+        {
+          "name": "LfThmInputableFieldNeutralSurfaceInverseHover",
+          "path": "Inputable / Field / Neutral / Surface / Inverse / Hover",
+          "value": "rgba(166, 166, 166, 0.15)"
+        }
+      ]
+    },
+    "Elevation": {
+      "figmaSubPaths": [
+        "Surface/Level1",
+        "Surface/Level2",
+        "Surface/Level3",
+        "Surface/Level4",
+        "OnSurface/Level1/Border",
+        "OnSurface/Level2/Border",
+        "OnSurface/Level3/Border",
+        "OnSurface/Level4/Border",
+        "Shadow/Level1",
+        "Shadow/Level2",
+        "Shadow/Level3",
+        "Shadow/Level4",
+        "Shadow/Fill"
+      ],
+      "npmTokenCount": 41,
+      "coverage": "present",
+      "sampleTokens": [
+        {
+          "name": "LfThmElevationOnSurfaceLevel1BorderDefault",
+          "path": "Elevation / OnSurface / Level1 / Border / Default",
+          "value": "rgba(166, 166, 166, 0.5)"
+        },
+        {
+          "name": "LfThmElevationOnSurfaceLevel1BorderHover",
+          "path": "Elevation / OnSurface / Level1 / Border / Hover",
+          "value": "rgba(166, 166, 166, 0.5)"
+        },
+        {
+          "name": "LfThmElevationOnSurfaceLevel1BorderPressed",
+          "path": "Elevation / OnSurface / Level1 / Border / Pressed",
+          "value": "rgba(68, 68, 68, 0.5)"
+        },
+        {
+          "name": "LfThmElevationOnSurfaceLevel2BorderDefault",
+          "path": "Elevation / OnSurface / Level2 / Border / Default",
+          "value": "rgba(166, 166, 166, 0.5)"
+        },
+        {
+          "name": "LfThmElevationOnSurfaceLevel2BorderHover",
+          "path": "Elevation / OnSurface / Level2 / Border / Hover",
+          "value": "rgba(166, 166, 166, 0.5)"
+        }
+      ]
+    },
+    "Gradient": {
+      "figmaSubPaths": [
+        "Start",
+        "Finish"
+      ],
+      "npmTokenCount": 2,
+      "coverage": "present",
+      "sampleTokens": [
+        {
+          "name": "LfThmGradientStart",
+          "path": "Gradient / Start",
+          "value": "#022149"
+        },
+        {
+          "name": "LfThmGradientFinish",
+          "path": "Gradient / Finish",
+          "value": "#043575"
+        }
+      ]
+    }
+  },
+  "npmCategories": {
+    "Base": {
+      "count": 47,
+      "inFigmaStructure": false,
+      "sampleTokens": [
+        "LfBsBorderWidth0",
+        "LfBsBorderWidth100",
+        "LfBsBorderWidth200"
+      ]
+    },
+    "Brand": {
+      "count": 190,
+      "inFigmaStructure": false,
+      "sampleTokens": [
+        "LfThmBrandBorderRadiusNone",
+        "LfThmBrandBorderRadiusXxSmall",
+        "LfThmBrandBorderRadiusXSmall"
+      ]
+    },
+    "Component": {
+      "count": 249,
+      "inFigmaStructure": false,
+      "sampleTokens": [
+        "LfThmComponentAiSmartSugesstionBorder",
+        "LfThmComponentAiSmartSugesstionSurfaceDefault",
+        "LfThmComponentAiSmartSugesstionSurfaceHover"
+      ]
+    },
+    "Screen": {
+      "count": 144,
+      "inFigmaStructure": false,
+      "sampleTokens": [
+        "LfThmScreenTypographyFontSizeDisplayDesktop",
+        "LfThmScreenTypographyFontSizeDisplayTablet",
+        "LfThmScreenTypographyFontSizeDisplayMobile"
+      ]
+    },
+    "Core": {
+      "count": 66,
+      "inFigmaStructure": true,
+      "sampleTokens": [
+        "LfThmCoreOnSurfaceTextPrimary",
+        "LfThmCoreOnSurfaceTextSecondary",
+        "LfThmCoreOnSurfaceTextTertiary"
+      ]
+    },
+    "Dynamic": {
+      "count": 176,
+      "inFigmaStructure": true,
+      "sampleTokens": [
+        "LfThmDynamicCriticalSurfaceDefault",
+        "LfThmDynamicCriticalSurfaceHover",
+        "LfThmDynamicCriticalSurfacePressed"
+      ]
+    },
+    "Elevation": {
+      "count": 41,
+      "inFigmaStructure": true,
+      "sampleTokens": [
+        "LfThmElevationOnSurfaceLevel1BorderDefault",
+        "LfThmElevationOnSurfaceLevel1BorderHover",
+        "LfThmElevationOnSurfaceLevel1BorderPressed"
+      ]
+    },
+    "Gradient": {
+      "count": 2,
+      "inFigmaStructure": true,
+      "sampleTokens": [
+        "LfThmGradientStart",
+        "LfThmGradientFinish"
+      ]
+    },
+    "Inputable": {
+      "count": 108,
+      "inFigmaStructure": true,
+      "sampleTokens": [
+        "LfThmInputableFieldNeutralSurfaceDefault",
+        "LfThmInputableFieldNeutralSurfaceHover",
+        "LfThmInputableFieldNeutralSurfaceActive"
+      ]
+    },
+    "Interactive": {
+      "count": 220,
+      "inFigmaStructure": true,
+      "sampleTokens": [
+        "LfThmInteractiveCriticalSurfaceLowDefault",
+        "LfThmInteractiveCriticalSurfaceLowHover",
+        "LfThmInteractiveCriticalSurfaceLowActive"
+      ]
+    },
+    "Static": {
+      "count": 251,
+      "inFigmaStructure": true,
+      "sampleTokens": [
+        "LfThmStaticAiSurfaceHighest",
+        "LfThmStaticAiSurfaceHigher",
+        "LfThmStaticAiSurfaceHigh"
+      ]
+    }
+  },
+  "npmTokensNotInFigmaStructure": [],
+  "figmaPathsNotInNpm": [
+    {
+      "figmaGroup": "Static",
+      "figmaSubPath": "Info",
+      "fullPath": "Static/Info"
+    },
+    {
+      "figmaGroup": "Static",
+      "figmaSubPath": "Highlight",
+      "fullPath": "Static/Highlight"
+    }
+  ],
+  "summary": {
+    "totalNpmTokens": 1494,
+    "figmaUsageGroupsCovered": 7,
+    "figmaUsageGroupsTotal": 7,
+    "npmTokensOutsideFigmaUsage": 0,
+    "figmaPathsMissingInNpm": 2
+  }
+}
