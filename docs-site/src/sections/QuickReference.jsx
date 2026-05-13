@@ -69,14 +69,23 @@ export default function QuickReference() {
           <tr><td colSpan="2" style={{ background: '#F5F5F5', fontWeight: 700 }}>Core — Primitivos de página</td></tr>
           <tr><td>Texto principal da página</td><td><code>Core/On Surface/Text/Primary</code></td></tr>
           <tr><td>Texto secundário</td><td><code>Core/On Surface/Text/Secondary</code></td></tr>
-          <tr><td>Texto desabilitado</td><td><code>Core/On Surface/Text/Disabled</code></td></tr>
+          <tr><td>Texto de erro</td><td><code>Core/On Surface/Text/Critical</code></td></tr>
           <tr><td>Ícone principal</td><td><code>Core/On Surface/Icon/Primary</code></td></tr>
           <tr><td>Ícone secundário</td><td><code>Core/On Surface/Icon/Secondary</code></td></tr>
-          <tr><td>Borda genérica / divisor</td><td><code>Core/On Surface/Border/Default</code></td></tr>
+          <tr><td>Divisor</td><td><code>Core/On Surface/Border/Divider</code></td></tr>
+          <tr><td>Focus ring</td><td><code>Core/On Surface/Border/Focus</code></td></tr>
           <tr><td>Link padrão</td><td><code>Core/On Surface/Link/Default</code></td></tr>
+          <tr><td>Link hover</td><td><code>Core/On Surface/Link/Hover</code></td></tr>
           <tr><td>Link visitado</td><td><code>Core/On Surface/Link/Visited</code></td></tr>
           <tr><td>Fundo da página</td><td><code>Core/Surface/Default</code></td></tr>
           <tr><td>Fundo invertido</td><td><code>Core/Surface/Inverse</code></td></tr>
+
+          {/* ── Elevation ── */}
+          <tr><td colSpan="2" style={{ background: '#F0F0FF', fontWeight: 700 }}>Elevation — Sombras</td></tr>
+          <tr><td>Sombra de card / dropdown</td><td><code>Elevation/Surface/Level1/Default</code></td></tr>
+          <tr><td>Sombra de popover / tooltip</td><td><code>Elevation/Surface/Level2/Default</code></td></tr>
+          <tr><td>Sombra de modal / dialog</td><td><code>Elevation/Surface/Level3/Default</code></td></tr>
+          <tr><td>Sombra de overlay crítico</td><td><code>Elevation/Surface/Level4/Default</code></td></tr>
         </tbody>
       </table>
     </div>

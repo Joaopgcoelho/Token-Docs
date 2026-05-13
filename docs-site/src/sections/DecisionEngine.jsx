@@ -7,7 +7,7 @@ export default function DecisionEngine() {
   return (
     <div>
       <LfHeading as="h1">AI Decision Engine</LfHeading>
-      <p className="subtitle">Regras determinísticas para consumo de tokens por IA — v2.</p>
+      <p className="subtitle">Regras determinísticas para consumo de tokens por IA — v2.1.1</p>
 
       <LfParagraph>
         Estas regras são projetadas para que uma IA (ou qualquer sistema automatizado) consiga
@@ -16,21 +16,33 @@ export default function DecisionEngine() {
       </LfParagraph>
 
       <LfAlert variant="info">
-        <strong>Regra zero:</strong> Nunca adivinhe. Sempre siga regras determinísticas. Nunca use Base ou Brand tokens diretamente em UI.
+        <strong>Regra Zero — Hierarquia de Consumo:</strong> 🥇 Componente @lift/ds-web → 🥈 Usage tokens → 🥉 Component tokens (último recurso). Nunca use Base ou Brand tokens em UI.
       </LfAlert>
 
       {/* ── Regra 1 ── */}
-      <LfHeading as="h2">Regra 1 — Verificar camada do token</LfHeading>
-      <pre>{`SE token.camada === "Base" → REJEITAR (nunca usar em UI)
-SE token.camada === "Brand" → REJEITAR (apenas referência interna)
-SE token.camada === "Component" E existe para o componente → PREFERIR
-SE token.camada === "Usage" → USAR (camada principal)
+      <LfHeading as="h2">Regra 1 — Verificar camada e hierarquia de consumo</LfHeading>
+      <pre>{`SE existe componente @lift/ds-web para o elemento
+  → USE COMPONENT (preferido; tokens automáticos)
+
+SENÃO SE token.camada === "Usage"
+  → USAR (camada semântica principal para UI manual)
+
+SENÃO SE token.camada === "Component" E contexto = "customizar componente DS existente"
+  → PERMITIR COMO ÚLTIMO RECURSO (System Ops only, com justificativa)
+
+SE token.camada === "Base"  → REJEITAR (nunca usar em UI)
+SE token.camada === "Brand" → REJEITAR (apenas referência interna, build-time)
+
+Resumo:
+  🥇 Componentes @lift/ds-web primeiro
+  🥈 Usage tokens para qualquer UI manual
+  🥉 Component tokens só para customização controlada
 
 Prefixos:
-  Base      → LfBs / --lf-bs-       NUNCA em UI
-  Brand     → LfThm + "Brand"       Apenas referência
-  Usage     → LfThm (sem "Brand")   SEMPRE em UI
-  Component → LfThm + "Component"   Quando disponível`}</pre>
+  Base      → LfBs / --lf-bs-              ❌ NUNCA em UI
+  Brand     → LfThmBrand / --lf-thm-brand- ❌ NUNCA em UI (build-time only)
+  Usage     → LfThm / --lf-thm-            ✅ SEMPRE em UI
+  Component → LfThm{Comp} / --lf-thm-component- ⚠️ Último recurso`}</pre>
 
       {/* ── Regra 2 ── */}
       <LfHeading as="h2">Regra 2 — Classificar o grupo (comportamento)</LfHeading>
@@ -225,10 +237,15 @@ SE componente UI ou gráfico:
       </LfParagraph>
 
       <pre>{`{
-  "elemento": "Botão de confirmar",
-  "grupo": "Dynamic",
-  "hierarquia": "Primary",
-  "tokens": {
+  "element": "Botão de confirmar",
+  "recommendedApproach": "component",
+  "confidence": 0.95,
+  "component": {
+    "name": "LfButton",
+    "props": { "appearance": "primary" },
+    "justification": "Componente DS disponível — tokens automáticos"
+  },
+  "fallbackTokens": {
     "background": {
       "token": "Dynamic/Primary/Surface/Default",
       "js": "LfThmDynamicPrimarySurfaceDefault",
@@ -254,6 +271,8 @@ SE componente UI ou gráfico:
     }
   },
   "regrasAplicadas": [
+    "R0: Componente LfButton disponível — usar PRIMEIRO",
+    "R1: camada=Usage (camada semântica principal)",
     "R2: grupo=Dynamic (altera navegação)",
     "R3: hierarquia=Primary (ação principal)",
     "R4: papel=Surface (background-color)",
