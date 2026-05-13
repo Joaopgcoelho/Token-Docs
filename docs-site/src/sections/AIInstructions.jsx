@@ -54,10 +54,10 @@ export default function AIInstructions() {
       </LfAlert>
 
       <LfParagraph>
-        Este arquivo contém todas as regras determinísticas para consumo de tokens por IA,
-        otimizado para eficiência de contexto. Inclui: hierarquia de consumo, classificação de grupo,
-        seleção de hierarquia, pairing rules, WCAG contrast, component registry, confidence scoring,
-        design smells, e formato de resposta JSON.
+        Este arquivo (<code>ai-instructions.md</code>) é gerado a partir do <code>lift-token-full.md</code> e contém
+        todas as regras determinísticas para consumo de tokens por IA, otimizado para eficiência de contexto.
+        Inclui: hierarquia de consumo, classificação de grupo, seleção de hierarquia, pairing rules,
+        WCAG contrast, component registry, confidence scoring, design smells, e formato de resposta JSON.
       </LfParagraph>
 
       <LfHeading as="h2">O que contém</LfHeading>

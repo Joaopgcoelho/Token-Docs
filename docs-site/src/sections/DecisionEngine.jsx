@@ -19,268 +19,330 @@ export default function DecisionEngine() {
         <strong>Regra Zero — Hierarquia de Consumo:</strong> 🥇 Componente @lift/ds-web → 🥈 Usage tokens → 🥉 Component tokens (último recurso). Nunca use Base ou Brand tokens em UI.
       </LfAlert>
 
-      {/* ── Regra 1 ── */}
-      <LfHeading as="h2">Regra 1 — Verificar camada e hierarquia de consumo</LfHeading>
-      <pre>{`SE existe componente @lift/ds-web para o elemento
-  → USE COMPONENT (preferido; tokens automáticos)
+      {/* ── Hierarquia de Consumo ── */}
+      <LfHeading as="h2">Hierarquia de Consumo</LfHeading>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Camada</th><th>Quando</th><th>Quem</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>🥇</td><td>Componente <code>@lift/ds-web</code></td><td>Sempre que existir</td><td>Todos</td></tr>
+          <tr><td>🥈</td><td>Usage tokens (<code>--lf-thm-*</code>)</td><td>UI manual sem componente DS</td><td>Todos</td></tr>
+          <tr><td>🥉</td><td>Component tokens (<code>--lf-thm-component-*</code>)</td><td>Customizar componente DS existente</td><td>System Ops</td></tr>
+          <tr><td>❌</td><td>Base (<code>LfBs*</code>) / Brand (<code>LfThmBrand*</code>)</td><td>NUNCA em runtime UI</td><td>—</td></tr>
+        </tbody>
+      </table>
 
-SENÃO SE token.camada === "Usage"
-  → USAR (camada semântica principal para UI manual)
+      {/* ── Token Architecture ── */}
+      <LfHeading as="h2">Token Architecture</LfHeading>
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>Prefix</th><th>UI</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Base</td><td><code>LfBs</code> / <code>--lf-bs-</code></td><td>❌</td><td>Raw primitives</td></tr>
+          <tr><td>Brand</td><td><code>LfThmBrand</code> / <code>--lf-thm-brand-</code></td><td>❌</td><td>Brand palette (build-time)</td></tr>
+          <tr><td>Usage</td><td><code>LfThm</code> / <code>--lf-thm-</code></td><td>✅</td><td>Semantic tokens</td></tr>
+          <tr><td>Component</td><td><code>LfThm&#123;Comp&#125;</code> / <code>--lf-thm-component-</code></td><td>⚠️</td><td>Overrides (last resort)</td></tr>
+        </tbody>
+      </table>
 
-SENÃO SE token.camada === "Component" E contexto = "customizar componente DS existente"
-  → PERMITIR COMO ÚLTIMO RECURSO (System Ops only, com justificativa)
-
-SE token.camada === "Base"  → REJEITAR (nunca usar em UI)
-SE token.camada === "Brand" → REJEITAR (apenas referência interna, build-time)
-
-Resumo:
-  🥇 Componentes @lift/ds-web primeiro
-  🥈 Usage tokens para qualquer UI manual
-  🥉 Component tokens só para customização controlada
-
-Prefixos:
-  Base      → LfBs / --lf-bs-              ❌ NUNCA em UI
-  Brand     → LfThmBrand / --lf-thm-brand- ❌ NUNCA em UI (build-time only)
-  Usage     → LfThm / --lf-thm-            ✅ SEMPRE em UI
-  Component → LfThm{Comp} / --lf-thm-component- ⚠️ Último recurso`}</pre>
-
-      {/* ── Regra 2 ── */}
-      <LfHeading as="h2">Regra 2 — Classificar o grupo (comportamento)</LfHeading>
+      {/* ── Group Classification ── */}
+      <LfHeading as="h2">Regra 2 — Classificação de Grupo</LfHeading>
       <LfParagraph>
-        Avalie as condições em ordem. A primeira condição verdadeira define o grupo.
+        Avalie na ordem — primeira condição verdadeira define o grupo:
       </LfParagraph>
-      <pre>{`PASSO 1: É componente de UI?
-  SE NÃO → verificar se é elemento de página global
-    SE texto/link/ícone/borda/fundo de página → grupo = "Core"
-    SE sombra/elevação (box-shadow)           → grupo = "Elevation"
-    SENÃO → ERRO: não é elemento de interface
+      <table>
+        <thead>
+          <tr><th>#</th><th>Condição</th><th>Group</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Coleta dados (input, select, textarea, checkbox, radio)</td><td><strong>Inputable</strong></td></tr>
+          <tr><td>2</td><td>Submete form OU muda navegação (button[submit], a[href], router)</td><td><strong>Dynamic</strong></td></tr>
+          <tr><td>3</td><td>Responde a interação local sem navegar (accordion, tab, dropdown)</td><td><strong>Interactive</strong></td></tr>
+          <tr><td>4</td><td>Visual puro, sem interação (card, alert, badge, divider)</td><td><strong>Static</strong></td></tr>
+          <tr><td>5</td><td>Background de página, texto, link, ícone, border global</td><td><strong>Core</strong></td></tr>
+          <tr><td>6</td><td>Sombra / box-shadow</td><td><strong>Elevation</strong></td></tr>
+        </tbody>
+      </table>
+      <LfParagraph>
+        <strong>Tiebreaker:</strong> "Muda página ou submete?" → Dynamic. "Fica na mesma tela?" → Interactive.
+      </LfParagraph>
 
-PASSO 2: É componente de UI — classificar por comportamento
-  SE elemento.coletaDados === true
-    → grupo = "Inputable"
-  SE elemento.alteraNavegacao === true OU elemento.submeteFormulario === true
-    → grupo = "Dynamic"
-  SE elemento.respondeInteracao === true E elemento.alteraNavegacao === false
-    → grupo = "Interactive"
-  SE elemento.ehVisualSemInteracao === true
-    → grupo = "Static"
-  SENÃO → ERRO: rever classificação
+      {/* ── Hierarchy Selection ── */}
+      <LfHeading as="h2">Regra 3 — Seleção de Hierarquia</LfHeading>
+      <table>
+        <thead>
+          <tr><th>Group</th><th>Condição → Hierarquia</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowSpan="5"><strong>Dynamic</strong></td><td>Ação principal (max 1/área) → Primary</td></tr>
+          <tr><td>Alternativa → Secondary</td></tr>
+          <tr><td>Destrutiva → Critical</td></tr>
+          <tr><td>Sem fundo → Ghost</td></tr>
+          <tr><td>Especial → Highlight</td></tr>
+          <tr><td rowSpan="4"><strong>Interactive</strong></td><td>Principal → Primary</td></tr>
+          <tr><td>Padrão → Neutral</td></tr>
+          <tr><td>Alt → Secondary / Tertiary</td></tr>
+          <tr><td>Feedback → Critical / Warning / Success / Info</td></tr>
+          <tr><td rowSpan="3"><strong>Static</strong></td><td>Genérico → Primary</td></tr>
+          <tr><td>Alt → Secondary / Neutral</td></tr>
+          <tr><td>Feedback → Critical / Success / Warning / Info / AI</td></tr>
+          <tr><td rowSpan="3"><strong>Inputable</strong></td><td>Normal → Neutral</td></tr>
+          <tr><td>Erro → Critical</td></tr>
+          <tr><td>Válido → Success</td></tr>
+          <tr><td rowSpan="4"><strong>Elevation</strong></td><td>Card/dropdown → Level1</td></tr>
+          <tr><td>Popover/tooltip → Level2</td></tr>
+          <tr><td>Modal/dialog → Level3</td></tr>
+          <tr><td>Overlay crítico → Level4</td></tr>
+        </tbody>
+      </table>
 
-REGRA DE DESEMPATE:
-  "Muda de página ou submete dados?" → Dynamic
-  "Fica na mesma tela?"              → Interactive`}</pre>
+      {/* ── Role ↔ CSS ── */}
+      <LfHeading as="h2">Regra 4 — Role ↔ CSS Property</LfHeading>
+      <table>
+        <thead>
+          <tr><th>CSS property</th><th>Token role</th><th>Notas</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>background-color</code></td><td>Surface</td><td>Ou Container (Static, bloco sobre bg)</td></tr>
+          <tr><td><code>color</code> (texto)</td><td>On Surface</td><td>Ou On Container (Static)</td></tr>
+          <tr><td><code>color</code> (ícone)</td><td>On Surface/Icon</td><td></td></tr>
+          <tr><td><code>border-color</code></td><td>On Surface/Border</td><td></td></tr>
+          <tr><td><code>fill</code> (SVG)</td><td>Icon</td><td></td></tr>
+          <tr><td><code>box-shadow</code></td><td>Elevation/Surface/Level*</td><td></td></tr>
+        </tbody>
+      </table>
 
-      {/* ── Regra 3 ── */}
-      <LfHeading as="h2">Regra 3 — Selecionar hierarquia</LfHeading>
-      <pre>{`SE grupo === "Dynamic":
-  acaoPrincipal (máx 1 por área)  → "Primary"
-  acaoAlternativa                 → "Secondary"
-  acaoDestrutiva                  → "Critical"
-  semFundoVisivel                 → "Ghost"
-  destaqueEspecial                → "Highlight"
+      <LfAlert variant="warning">
+        <strong>Container vs Surface (Static only):</strong> Page/section bg = Surface → On Surface. Card/banner/modal = Container → On Container. Nunca misturar.
+      </LfAlert>
 
-SE grupo === "Interactive":
-  destaquePrincipal               → "Primary"
-  destaqueSecundario              → "Secondary"
-  terceiroNivel                   → "Tertiary"
-  padrao                          → "Neutral"
-  destaqueEspecial                → "Highlight"
-  feedbackErro                    → "Critical"
-  feedbackAviso                   → "Warning"
-  feedbackSucesso                 → "Success"
-  feedbackInfo                    → "Info"
+      {/* ── States ── */}
+      <LfHeading as="h2">Regra 5 — Estados</LfHeading>
+      <table>
+        <thead>
+          <tr><th>Condição</th><th>State</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sem interação</td><td>Default</td></tr>
+          <tr><td>Cursor sobre</td><td>Hover</td></tr>
+          <tr><td>Clicado</td><td>Pressed</td></tr>
+          <tr><td>Selecionado/ativo</td><td>Active</td></tr>
+          <tr><td>Processando</td><td>Loading</td></tr>
+          <tr><td>Desabilitado</td><td>Disabled</td></tr>
+        </tbody>
+      </table>
 
-SE grupo === "Static":
-  conteudoGenerico                → "Primary"
-  conteudoSecundario              → "Secondary"
-  estruturaNeutra                 → "Neutral"
-  alertaErro                      → "Critical"
-  alertaSucesso                   → "Success"
-  alertaAviso                     → "Warning"
-  informativo                     → "Info"
-  conteudoIA                      → "AI"
+      {/* ── Modifiers ── */}
+      <LfHeading as="h2">Regra 6 — Modificadores</LfHeading>
+      <table>
+        <thead>
+          <tr><th>Contexto</th><th>Modifier</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Fundo escuro (luminance &lt; 0.18)</td><td>Inverse</td></tr>
+          <tr><td>Fundo claro</td><td>(nenhum)</td></tr>
+          <tr><td>Static Surface alta intensidade</td><td>Highest / Higher / High</td></tr>
+          <tr><td>Static Surface baixa intensidade</td><td>Low / Lower / Lowest</td></tr>
+          <tr><td>Interactive intensidade</td><td>Low / Pure / High</td></tr>
+        </tbody>
+      </table>
+      <LfParagraph>
+        <strong>Regra:</strong> High/Higher/Highest bg → texto Normal. Low/Lower/Lowest bg → texto Inverse. Sempre validar contraste.
+      </LfParagraph>
 
-SE grupo === "Inputable":
-  campoNormal                     → "Neutral"
-  campoComErro                    → "Critical"
-  campoValidado                   → "Success"
+      {/* ── Token Assembly ── */}
+      <LfHeading as="h2">Regra 7 — Montar o Token</LfHeading>
+      <pre>{`token = [Group] / [Hierarchy] / [Role] / [Modifier?] / [State]
 
-SE grupo === "Elevation":
-  elevacaoSutil (card, dropdown)  → "Level1"
-  elevacaoMedia (popover, tooltip)→ "Level2"
-  elevacaoAlta (modal, dialog)    → "Level3"
-  elevacaoMaxima (overlay critico)→ "Level4"`}</pre>
-
-      {/* ── Regra 4 ── */}
-      <LfHeading as="h2">Regra 4 — Selecionar papel (role) pela propriedade CSS</LfHeading>
-      <pre>{`propriedadeCSS → papel (role)
-─────────────────────────────────────────────────
-background-color  → "Surface"
-background-color  → "Container" (apenas Static, camada acima do Surface)
-color (texto)     → "On Surface" ou "On Surface/Text"
-color (ícone)     → "On Surface/Icon" ou "Icon"
-border-color      → "On Surface/Border" ou "Border"
-fill (SVG)        → "Icon"
-box-shadow        → "Elevation" (grupo Elevation)
-
-REGRA CONTAINER (apenas grupo Static):
-  SE é fundo de um GRUPO de elementos (card, bloco) → "Container"
-  SE é conteúdo SOBRE esse grupo                    → "On Container"
-  SE é fundo de seção/página                        → "Surface"
-  SE é conteúdo sobre seção/página                  → "On Surface"`}</pre>
-
-      {/* ── Regra 5 ── */}
-      <LfHeading as="h2">Regra 5 — Selecionar estado</LfHeading>
-      <pre>{`semInteracao       → "Default"
-cursorSobre        → "Hover"
-pressionado        → "Pressed"
-ativoSelecionado   → "Active"
-processando        → "Loading"
-desabilitado       → "Disabled"`}</pre>
-
-      {/* ── Regra 6 ── */}
-      <LfHeading as="h2">Regra 6 — Selecionar modificador (quando aplicável)</LfHeading>
-      <pre>{`SE contextoEscuro (luminance < 0.18) → modificador = "Inverse"
-SE contextoClaro (luminance > 0.5)  → modificador = nenhum (Normal)
-
-NUNCA misturar Normal e Inverse no mesmo componente
-
-SE grupo === "Static" E papel === "Surface":
-  intensidadeAlta   → "Highest" / "Higher" / "High"
-  intensidadeBaixa  → "Low" / "Lower" / "Lowest"
-
-SE grupo === "Interactive" E tem intensidade:
-  → "Low" / "Pure" / "High"`}</pre>
-
-      {/* ── Regra 7 ── */}
-      <LfHeading as="h2">Regra 7 — Montar o token</LfHeading>
-      <pre>{`token = [Grupo] / [Hierarquia] / [Papel] / [Modificador?] / [Estado]
-
-Exemplos:
-  Dynamic/Primary/Surface/Default
-  Dynamic/Primary/On Surface/Default
-  Dynamic/Primary/Surface/Hover
-  Dynamic/Critical/Surface/Default
-  Static/Primary/Surface/Highest
-  Static/Primary/On Surface/High
-  Static/Primary/Container/Default
-  Static/Primary/On Container/Default
-  Interactive/Primary/Surface/Active
-  Interactive/Warning/Surface/Pure/Default
-  Inputable/Field/Neutral/Surface/Default
-  Inputable/Field/Critical/On Surface/Border/Default
-  Core/Surface/Default
-  Core/Surface/Inverse
-  Core/On Surface/Text/Primary
-  Core/On Surface/Link/Default
-  Elevation/Surface/Level1/Default
-
-Conversão para código:
+Conversão:
   Figma: Dynamic/Primary/Surface/Default
   JS:    LfThmDynamicPrimarySurfaceDefault
   CSS:   --lf-thm-dynamic-primary-surface-default`}</pre>
 
-      {/* ── Regra 8 ── */}
-      <LfHeading as="h2">Regra 8 — Validar pareamento Surface ↔ On Surface</LfHeading>
-      <pre>{`PARA CADA Surface aplicado:
-  OBRIGATÓRIO ter On Surface do MESMO grupo + MESMA hierarquia + MESMO estado
-  SE on-surface.grupo !== surface.grupo           → ERRO
-  SE on-surface.hierarquia !== surface.hierarquia → ERRO
+      {/* ── Pairing ── */}
+      <LfHeading as="h2">Regra 8 — Pareamento Surface ↔ On Surface</LfHeading>
+      <pre>{`bg: {Group}/{Hierarchy}/Surface/{State}
+fg: {Group}/{Hierarchy}/On Surface/{State}     ← MESMO grupo + hierarquia
 
-PARA CADA Container aplicado (apenas Static):
-  OBRIGATÓRIO ter On Container do MESMO grupo + MESMA hierarquia
-  SE usa on-surface sobre container               → ERRO
-  SE usa on-container sobre surface               → ERRO
+bg: Static/{Hierarchy}/Container/{State}
+fg: Static/{Hierarchy}/On Container/{State}    ← MESMA hierarquia`}</pre>
+      <table>
+        <thead>
+          <tr><th>Background</th><th>Foreground obrigatório</th><th>Proibido</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Dynamic/Primary/Surface</td><td>Dynamic/Primary/On Surface</td><td>Qualquer outro grupo</td></tr>
+          <tr><td>Static/Primary/Surface/Highest</td><td>Static/Primary/On Surface/High</td><td>Core ou Dynamic</td></tr>
+          <tr><td>Static/*/Container/*</td><td>Static/*/On Container/*</td><td>On Surface tokens</td></tr>
+          <tr><td>Core/Surface/Default</td><td>Core/On Surface/Text/Primary</td><td>Brand ou Dynamic</td></tr>
+          <tr><td>Inputable/Field/*/Surface</td><td>Inputable/Field/*/On Surface</td><td>Outros grupos</td></tr>
+        </tbody>
+      </table>
 
-Exemplos válidos:
-  bg: Dynamic/Primary/Surface/Default
-  fg: Dynamic/Primary/On Surface/Default          [OK]
+      {/* ── WCAG ── */}
+      <LfHeading as="h2">Regra 9 — Contraste WCAG</LfHeading>
+      <table>
+        <thead>
+          <tr><th>Tipo</th><th>Ratio mínimo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Texto normal (&lt; 18px)</td><td>≥ 4.5:1</td></tr>
+          <tr><td>Texto grande (≥ 18px bold ou ≥ 24px)</td><td>≥ 3.0:1</td></tr>
+          <tr><td>Componente UI / gráfico</td><td>≥ 3.0:1</td></tr>
+        </tbody>
+      </table>
 
-  bg: Static/Primary/Container/Default
-  fg: Static/Primary/On Container/Default         ✅
+      {/* ── Checklist ── */}
+      <LfHeading as="h2">Regra 10 — Checklist Final</LfHeading>
+      <pre>{`Antes de aplicar qualquer token:
+  [ ] Token da camada Usage (ou Component como último recurso)
+  [ ] Role corresponde à propriedade CSS
+  [ ] Group corresponde ao comportamento do elemento
+  [ ] Surface/On Surface = mesmo grupo + hierarquia
+  [ ] Contraste ≥ WCAG AA
+  [ ] Max 1 Primary por área visível
+  [ ] Variante (Normal/Inverse) corresponde ao contexto
+  [ ] State corresponde ao estado do elemento
+  [ ] Não está nas combinações proibidas`}</pre>
 
-Exemplos inválidos:
-  bg: Static/Primary/Surface/Highest
-  fg: Dynamic/Primary/On Surface/Default          [X] (grupos diferentes)
+      {/* ── Forbidden ── */}
+      <LfHeading as="h2">Combinações Proibidas</LfHeading>
+      <table>
+        <thead>
+          <tr><th>❌ Nunca fazer</th><th>Por quê</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>LfBs*</code> ou <code>--lf-bs-*</code> em UI</td><td>Base = raw primitives</td></tr>
+          <tr><td><code>LfThmBrand*</code> ou <code>--lf-thm-brand-*</code> em UI</td><td>Brand = build-time only</td></tr>
+          <tr><td><code>#hex</code> hardcoded quando existe token</td><td>Quebra theming</td></tr>
+          <tr><td>Surface grupo A + On Surface grupo B</td><td>Mismatch semântico</td></tr>
+          <tr><td>On Surface sobre Container</td><td>Deve usar On Container</td></tr>
+          <tr><td>On Container sobre Surface</td><td>Deve usar On Surface</td></tr>
+          <tr><td>Múltiplos Primary na mesma área</td><td>Confusão UX</td></tr>
+          <tr><td>Dynamic em elementos não-interativos</td><td>Semântica errada</td></tr>
+          <tr><td>Static em elementos clicáveis</td><td>Semântica errada</td></tr>
+          <tr><td>Inputable em botões de submit</td><td>Grupo errado</td></tr>
+          <tr><td>Misturar Normal + Inverse no mesmo componente</td><td>Inconsistência visual</td></tr>
+        </tbody>
+      </table>
 
-  bg: Static/Primary/Container/Default
-  fg: Static/Primary/On Surface/Default           [X] (On Surface sobre Container)`}</pre>
+      {/* ── Design Smells ── */}
+      <LfHeading as="h2">Design Smells</LfHeading>
+      <LfParagraph>
+        Anti-patterns detectáveis automaticamente:
+      </LfParagraph>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Severidade</th><th>Descrição</th><th>Fix</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>multiple-primary-actions</code></td><td>Warning</td><td>&gt;1 Primary no viewport</td><td>Downgrade para Secondary</td></tr>
+          <tr><td><code>clickable-static</code></td><td>Error</td><td>Static em elemento interativo</td><td>Usar Dynamic/Interactive</td></tr>
+          <tr><td><code>missing-hover-state</code></td><td>Warning</td><td>Sem hover em interativo</td><td>Adicionar token hover</td></tr>
+          <tr><td><code>missing-focus-ring</code></td><td>Error</td><td>Sem focus em focusable</td><td>Core/On Surface/Border/Focus</td></tr>
+          <tr><td><code>hardcoded-hex</code></td><td>Error</td><td>#hex ao invés de token</td><td>Substituir por token semântico</td></tr>
+          <tr><td><code>mixed-semantic-groups</code></td><td>Error</td><td>Surface ≠ On Surface grupo</td><td>Alinhar grupos</td></tr>
+          <tr><td><code>low-contrast</code></td><td>Error</td><td>&lt; 4.5:1 para texto</td><td>Ajustar par de tokens</td></tr>
+          <tr><td><code>surface-without-onsurface</code></td><td>Error</td><td>bg sem fg</td><td>Adicionar foreground</td></tr>
+          <tr><td><code>inputable-on-button</code></td><td>Error</td><td>Input tokens em submit</td><td>Usar Dynamic</td></tr>
+          <tr><td><code>static-on-link</code></td><td>Error</td><td>Static em navegação</td><td>Usar Dynamic</td></tr>
+        </tbody>
+      </table>
 
-      {/* ── Regra 9 ── */}
-      <LfHeading as="h2">Regra 9 — Validar contraste WCAG</LfHeading>
-      <pre>{`SE texto normal (< 18px ou < 14px bold):
-  ratio(surface, on-surface) >= 4.5  (WCAG AA)
+      {/* ── Confidence Scoring ── */}
+      <LfHeading as="h2">AI Confidence Scoring</LfHeading>
+      <table>
+        <thead>
+          <tr><th>Score</th><th>Ação</th><th>Descrição</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0.90+</td><td>✅ Auto-apply</td><td>Alta confiança — aplicar automaticamente</td></tr>
+          <tr><td>0.75–0.89</td><td>⚠️ Apply + warn</td><td>Média-alta — aplicar com aviso</td></tr>
+          <tr><td>0.50–0.74</td><td>🔍 Validação</td><td>Média — não auto-aplicar</td></tr>
+          <tr><td>&lt; 0.50</td><td>❌ Rejeitar</td><td>Baixa — falhar com explicação</td></tr>
+        </tbody>
+      </table>
+      <LfParagraph>
+        <strong>Aumenta:</strong> HTML semântico, props claras, match no registry, interpretação única.
+        <br />
+        <strong>Diminui:</strong> Elemento genérico (div/span), onClick ambíguo, múltiplas interpretações, sinais conflitantes.
+      </LfParagraph>
 
-SE texto grande (>= 18px bold ou >= 24px):
-  ratio(surface, on-surface) >= 3.0  (WCAG AA Large)
+      {/* ── Component Registry ── */}
+      <LfHeading as="h2">Component Registry</LfHeading>
+      <LfParagraph>
+        Componentes <code>@lift/ds-web</code> disponíveis — sempre preferir sobre tokens manuais:
+      </LfParagraph>
+      <table>
+        <thead>
+          <tr><th>Component</th><th>Group</th><th>Props principais</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>LfButton</code></td><td>Dynamic</td><td>appearance: primary, secondary, critical, ghost</td></tr>
+          <tr><td><code>LfLink</code></td><td>Dynamic</td><td>—</td></tr>
+          <tr><td><code>LfAccordion</code></td><td>Interactive</td><td>appearance: primary, neutral, secondary</td></tr>
+          <tr><td><code>LfTab</code></td><td>Interactive</td><td>active, disabled</td></tr>
+          <tr><td><code>LfMenu</code></td><td>Interactive</td><td>—</td></tr>
+          <tr><td><code>LfDropdown</code></td><td>Interactive</td><td>—</td></tr>
+          <tr><td><code>LfTooltip</code></td><td>Interactive</td><td>—</td></tr>
+          <tr><td><code>LfInput</code></td><td>Inputable</td><td>variant: neutral, error, success</td></tr>
+          <tr><td><code>LfSelect</code></td><td>Inputable</td><td>variant: neutral, error, success</td></tr>
+          <tr><td><code>LfCheckbox</code></td><td>Inputable</td><td>checked, indeterminate, disabled</td></tr>
+          <tr><td><code>LfRadio</code></td><td>Inputable</td><td>checked, disabled</td></tr>
+          <tr><td><code>LfSwitch</code></td><td>Inputable</td><td>checked, disabled</td></tr>
+          <tr><td><code>LfCard</code></td><td>Static</td><td>elevation: none, low, medium, high</td></tr>
+          <tr><td><code>LfAlert</code></td><td>Static</td><td>severity: error, warning, success, info</td></tr>
+          <tr><td><code>LfBadge</code></td><td>Static</td><td>appearance: primary, secondary, neutral</td></tr>
+          <tr><td><code>LfDivider</code></td><td>Core</td><td>—</td></tr>
+        </tbody>
+      </table>
 
-SE componente UI ou gráfico:
-  ratio(surface, on-surface) >= 3.0`}</pre>
+      {/* ── Intent → Component ── */}
+      <LfHeading as="h2">Intent → Componente Recomendado</LfHeading>
+      <table>
+        <thead>
+          <tr><th>Intent</th><th>Componente</th><th>Group</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Submit form</td><td>LfButton (primary)</td><td>Dynamic</td></tr>
+          <tr><td>Navegar</td><td>LfButton (primary) / LfLink</td><td>Dynamic</td></tr>
+          <tr><td>Cancelar</td><td>LfButton (secondary)</td><td>Dynamic</td></tr>
+          <tr><td>Deletar</td><td>LfButton (critical)</td><td>Dynamic</td></tr>
+          <tr><td>Expandir conteúdo</td><td>LfAccordion</td><td>Interactive</td></tr>
+          <tr><td>Trocar aba</td><td>LfTab</td><td>Interactive</td></tr>
+          <tr><td>Selecionar de lista</td><td>LfDropdown / LfMenu</td><td>Interactive</td></tr>
+          <tr><td>Digitar texto</td><td>LfInput</td><td>Inputable</td></tr>
+          <tr><td>Selecionar opção</td><td>LfSelect</td><td>Inputable</td></tr>
+          <tr><td>Toggle on/off</td><td>LfCheckbox / LfSwitch</td><td>Inputable</td></tr>
+          <tr><td>Mostrar info</td><td>LfCard</td><td>Static</td></tr>
+          <tr><td>Mostrar erro</td><td>LfAlert (error)</td><td>Static</td></tr>
+          <tr><td>Mostrar sucesso</td><td>LfAlert (success)</td><td>Static</td></tr>
+        </tbody>
+      </table>
 
-      {/* ── Regra 10 ── */}
-      <LfHeading as="h2">Regra 10 — Checklist final</LfHeading>
-      <pre>{`Antes de aplicar qualquer token, verificar:
-  [ ] Token é da camada Usage ou Component (não Base, não Brand)
-  [ ] Papel (role) corresponde à propriedade CSS
-  [ ] Grupo corresponde ao comportamento do elemento
-  [ ] Par surface/on-surface é do mesmo grupo e hierarquia
-  [ ] Contraste atende WCAG AA mínimo
-  [ ] Máximo 1 Primary por área de ação visível
-  [ ] Variante (normal/inverse) corresponde ao contexto de luminosidade
-  [ ] Estado do token corresponde ao estado do elemento
-  [ ] Não está na lista de combinações proibidas`}</pre>
-
-      {/* ── Formato de resposta ── */}
-      <LfHeading as="h2">Formato de resposta JSON para IA</LfHeading>
+      {/* ── AI Response Format ── */}
+      <LfHeading as="h2">Formato de Resposta JSON</LfHeading>
       <LfParagraph>
         Quando uma IA responde com sugestão de token, deve usar este formato:
       </LfParagraph>
-
       <pre>{`{
-  "element": "Botão de confirmar",
+  "element": "submit button",
   "recommendedApproach": "component",
   "confidence": 0.95,
-  "component": {
-    "name": "LfButton",
-    "props": { "appearance": "primary" },
-    "justification": "Componente DS disponível — tokens automáticos"
-  },
+  "component": { "name": "LfButton", "props": { "appearance": "primary" } },
   "fallbackTokens": {
-    "background": {
-      "token": "Dynamic/Primary/Surface/Default",
-      "js": "LfThmDynamicPrimarySurfaceDefault",
-      "css": "--lf-thm-dynamic-primary-surface-default",
-      "papel": "Surface",
-      "estado": "Default"
-    },
-    "color": {
-      "token": "Dynamic/Primary/On Surface/Default",
-      "js": "LfThmDynamicPrimaryOnSurfaceDefault",
-      "css": "--lf-thm-dynamic-primary-on-surface-default",
-      "papel": "On Surface",
-      "estado": "Default"
-    }
+    "background": { "token": "Dynamic/Primary/Surface/Default", "css": "--lf-thm-dynamic-primary-surface-default" },
+    "color": { "token": "Dynamic/Primary/On Surface/Default", "css": "--lf-thm-dynamic-primary-on-surface-default" }
   },
-  "estados": {
-    "hover": {
-      "background": "Dynamic/Primary/Surface/Hover",
-      "color": "Dynamic/Primary/On Surface/Hover"
-    },
-    "pressed": {
-      "background": "Dynamic/Primary/Surface/Pressed"
-    }
+  "states": {
+    "hover": { "background": "Dynamic/Primary/Surface/Hover" },
+    "pressed": { "background": "Dynamic/Primary/Surface/Pressed" }
   },
-  "regrasAplicadas": [
-    "R0: Componente LfButton disponível — usar PRIMEIRO",
-    "R1: camada=Usage (camada semântica principal)",
-    "R2: grupo=Dynamic (altera navegação)",
-    "R3: hierarquia=Primary (ação principal)",
-    "R4: papel=Surface (background-color)",
-    "R8: pareamento Surface+On Surface validado",
-    "R9: contraste 8.1:1 (AAA)"
-  ],
-  "avisos": [],
-  "contraste": { "ratio": "8.1:1", "nivel": "AAA" }
+  "rulesApplied": ["R0: Component available", "R8: Pairing OK", "R9: Contrast 8.1:1 AAA"],
+  "warnings": [],
+  "contrast": { "ratio": "8.1:1", "level": "AAA" }
 }`}</pre>
     </div>
   );
